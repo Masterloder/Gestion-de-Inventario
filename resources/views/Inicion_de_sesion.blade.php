@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de sesión</title>
     <link rel="stylesheet" href="{{ asset(path: 'css/formulario.css') }}">
 </head>
+
 <body>
     <div class="login-container">
         <div class="login-card">
@@ -13,8 +15,29 @@
                 <h2>Bienvenido</h2>
                 <p>Inicia sesión en tu cuenta</p>
             </div>
-            
-            <form class="login-form" id="loginForm" novalidate>
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+            @if(session('success'))
+            <div class="alert alert-success" role="alert">
+                {{ session('success') }}
+            </div>
+            @endif
+
+            <form method="POST" action="{{ route('login.post') }}" class="login-form" id="loginForm" novalidate>
+                @csrf
+                @session('error')
+                <div class="alert alert-danger" role="alert">
+                    {{ $value }}
+                </div>
+                @endsession
+
                 <div class="form-group">
                     <div class="input-wrapper">
                         <input type="email" id="email" name="email" required autocomplete="email">
@@ -54,18 +77,13 @@
             </form>
 
             <div class="signup-link">
-                <p>No tienes una cuenta? <a href="#">Regístrate</a></p>
-            </div>
-
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">✓</div>
-                <h3>Ingresando</h3>
-                <p>Redirigiendo a tu panel...</p>
+                <p>No tienes una cuenta? <a href="/registro">Regístrate</a></p>
             </div>
         </div>
     </div>
 
-    <script src="{{ asset('js/form.js') }}"></script>
+    <script src="{{ asset('form.js') }}"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

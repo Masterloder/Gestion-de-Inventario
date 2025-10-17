@@ -13,7 +13,18 @@
                 <h2>Bienvenido</h2>
                 <p>Registra tu cuenta <p>
             </div>
-            <form class="login-form" id="loginForm" novalidate>
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <form method="POST" action="{{ route('register.post') }}" class="login-form" id="loginForm" novalidate>
+                @csrf
                 <div class="form-group">
                     <div class="input-wrapper">
                         <input type="email" id="email" name="email" required autocomplete="email">
@@ -22,18 +33,44 @@
                     </div>
                     <span class="error-message" id="emailError"></span>
                 </div>
-
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="name" name="name" required autocomplete="name">
+                        <label for="name">Nombre Completo</label>
+                        <span class="focus-border"></span>
+                    </div>
+                    <span class="error-message" id="nameError"></span>
+                </div>
                 <div class="form-group">
                     <div class="input-wrapper password-wrapper">
-                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <input type="password" id="password" name="password" required autocomplete="new-password">
                         <label for="password">Contraseña</label>
-                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                        <button type="button" class="password-toggle" id="passwordConfirmToggle" aria-label="Mostrar contraseña">
                             <span class="eye-icon"></span>
                         </button>
                         <span class="focus-border"></span>
                     </div>
-                    <span class="error-message" id="passwordError"></span>
+                    @error('password')
+                        <span class="error-message">{{ $message }}</span>
+                    @else
+                        <span class="error-message" id="passwordError"></span>
+                    @enderror
                 </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" id="password_confirmation" name="password_confirmation" required autocomplete="new-password">
+                        <label for="password_confirmation">Confirmar Contraseña</label>
+                        <button type="button" class="password-toggle" id="passwordConfirmToggle" aria-label="Mostrar contraseña">
+                            <span class="eye-icon"></span>
+                        </button>
+                        <span class="focus-border"></span>
+                    </div>
+                    @error('password_confirmation')
+                        <span class="error-message">{{ $message }}</span>
+                    @else
+                        <span class="error-message" id="passwordConfirmError"></span>
+                    @enderror
 
                 <div class="form-options">
                     <label class="remember-wrapper">
@@ -47,19 +84,19 @@
                 </div>
 
                 <button type="submit" class="login-btn btn">
-                    <span class="btn-text">Iniciar sesión</span>
+                    <span class="btn-text">Registrarse</span>
                     <span class="btn-loader"></span>
                 </button>
             </form>
 
             <div class="signup-link">
-                <p>Ya tienes una cuenta? <a href="/login">Inicia sesión</a></p>
+                <p>Ya tienes una cuenta? <a href="/Inicio_de_sesion">Inicia sesión</a></p>
             </div>
 
         </div>
     </div>
 
-    <script src="{{ asset('js/form.js') }}"></script>
+    <script src="{{ asset('form.js') }}"></script>
     <script src="script.js"></script>
 </body>
 </html>
