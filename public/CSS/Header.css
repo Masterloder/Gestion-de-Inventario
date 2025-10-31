@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+header {
+    background-color: #0063d4;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+logo {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+}
+nav a:hover {
+    background-color: #082b9e;
+    border-radius: 15px;
+}
