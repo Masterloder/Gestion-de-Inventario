@@ -1,20 +1,20 @@
-<div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+<div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-bs-ride="carousel" >
   <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img class="d-block w-100" src="{{ asset('images/Slider/slider1.png') }}" alt="First slide">
+    <div class="carousel-item active" data-bs-slide-to="0">
+      <img class="d-block w-100 " src="{{ asset('images/Slider/slider1.png') }}" alt="First slide">
     </div>
-    <div class="carousel-item">
+    <div class="carousel-item" data-bs-slide-to="1">
       <img class="d-block w-100" src="{{ asset('images/Slider/slider2.png') }}" alt="Second slide">
     </div>
-    <div class="carousel-item">
+    <div class="carousel-item" data-bs-slide-to="2">
       <img class="d-block w-100" src="{{ asset('images/Slider/slider3.png') }}" alt="Third slide">
     </div>
   </div>
-  <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+  <a class="carousel-control-prev " href="#carouselExampleControls" role="button" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="sr-only">Previo</span>
   </a>
-  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+  <a class="carousel-control-next " href="#carouselExampleControls" role="button" data-bs-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="sr-only">Siguiente</span>
   </a>
