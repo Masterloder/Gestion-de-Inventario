@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('codigo', 100)->unique();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->string('unidad_medida', 50);
-            $table->string('categoria', 100);
-            $table->string('categoria_especifica', 100)->nullable();
+            $table->enum('unidad_medida', ['metros_cubicos', 'kilogramos', 'litros', 'unidades']);
+            $table->enum('categoria',['Materiales Pétreos', 'Materiales Cerámicos y vítreos' , 'Materiales Compuestos' , 'Materiales Metálicos', 'Materiales Orgánicos']);
+            $table->enum('categoria_especifica', ['Estructural', 'Aglutinantes', 'Acabado', 'Cerramiento'])->nullable();
             $table->timestamps();
         });
     }

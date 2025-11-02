@@ -19,10 +19,10 @@ return new class extends Migration
             $table->string('numero_referencia')->nullable();
             $table->foreignId('id_material')->constrained('materiales');
             $table->foreignId('id_almacen')->constrained('almacenes');
-            $table->foreignId('id_usuario')->constrained('user');
+            $table->foreignId('id_usuario')->constrained('users');
             $table->foreignId('id_proveedor')->nullable()->constrained('proveedores');
             $table->foreignId('id_sector')->nullable()->constrained('sectores');
-            // $table->timestamps();
+            $table->timestamps();
         });
     }
 

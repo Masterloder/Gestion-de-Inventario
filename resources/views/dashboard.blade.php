@@ -9,9 +9,8 @@
     <link rel="stylesheet" href="Estilo.css">
   </head>
 <body>
-  <header class="pb-3 mb-4 border-bottom">
-      @include('components.header_Sesion')
-    </header>
+  @include('components.lateral_nav')
+  @include('components.siderbar')
 <main>
   <div class="container-fluid  py-4">
     <div class="p-5 mb-4 bg-light rounded-3">
@@ -24,7 +23,7 @@
 
         <h1 class="display-5 fw-bold">Bienvenido, {{ auth()->user()->name}}</h1>
         <p class="col-md-8 fs-4"> Al sistema de Gestion de Inventario<br/></p>
-        <a href="/"><button class="btn btn-primary btn-lg" type="button">Dashboard</button></a>
+        <a href="/panel_de_control"><button class="btn btn-primary btn-lg" type="button">Panel de Control</button></a>
       </div>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>

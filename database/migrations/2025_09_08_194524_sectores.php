@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('contacto');
             $table->text('direccion_entrega');
-            // $table->timestamps();
+            $table->timestamps();
         });
     }
 
