@@ -35,10 +35,10 @@
 </svg>
 <!-- fin de los logos --- -->
 <main class="nav navbar-expand-lb d-flex flex-nowrap h-100vh">
-    <section class="offcanvas offcanvas-start bg-dark" id="menuLateral" tabindex="-1">
+    <section class="offcanvas offcanvas-start bg-primary" id="menuLateral" tabindex="-1">
 
         <div
-            class="d-flex flex-column flex-shrink-0 p-3 h-100vh text-bg-dark"
+            class="d-flex flex-column flex-shrink-0 p-3 h-100vh text-bg-primary"
             style="width: 280px; height: 100vh;">
             <a
                 href="/dashboard"

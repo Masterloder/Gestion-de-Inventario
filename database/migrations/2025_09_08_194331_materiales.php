@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('materiales', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo', 100)->unique();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->enum('unidad_medida', ['metros_cubicos', 'kilogramos', 'litros', 'unidades']);
-            $table->enum('categoria',['Materiales Pétreos', 'Materiales Cerámicos y vítreos' , 'Materiales Compuestos' , 'Materiales Metálicos', 'Materiales Orgánicos']);
-            $table->enum('categoria_especifica', ['Estructural', 'Aglutinantes', 'Acabado', 'Cerramiento'])->nullable();
+            $table->text('unidad_medida');
+            $table->text('categoria');
+            $table->text('categoria_especifica')->nullable();
             $table->timestamps();
         });
     }

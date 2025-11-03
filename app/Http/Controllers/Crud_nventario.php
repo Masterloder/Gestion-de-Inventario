@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Post;
-use App\Models\PostMovimientos;
 use App\Models\Provedores;
+use App\Models\Materiales;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class Crud_nventario extends Controller
 {
@@ -22,54 +22,33 @@ class Crud_nventario extends Controller
     /**
      * Muestra el formulario para crear un nuevo recurso.
      */
-    public function create()
+    public function PostMaterial( Request $request): RedirectResponse
     {
         $request->validate([
             'nombre' => 'required',
-            'correo' => 'required|email|unique:proveedores,correo',
-            'telefono' => 'nullable|numeric',
-            'direccion' => 'required',
+            'descripcion' => 'required',
+            'unidad_medida' => 'required',
+            'categoria' => 'required',
+            'categoria_especifica'=> 'required'
         ]);
-    }
+        $data = $request->all();
+        $this->create($data);
+        return redirect("/panel_de_control/Logistica")->withSuccess('');
 
     /**
      * Almacena un recurso recién creado en el almacenamiento.
      */
-    public function store(Request $request)
-    {
-        //
     }
+    public function create(array $data){
 
-    /**
-     * Muestra el recurso especificado.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        return Materiales::create([
+            'nombre' => $data['nombre'],
+            'descripcion' => $data['descripcion'],
+            'unidad_medida' =>$data['unidad_medida'],
+            'categoria' => $data['categoria'],
+            'categoria_especifica'=> $data['categoria_especifica']
+        ]);
 
-    /**
-     * Muestra el formulario para editar el recurso especificado.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Actualiza el recurso especificado en el almacenamiento.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Elimina el recurso especificado del almacenamiento.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
 

@@ -6,6 +6,8 @@ use App\Http\Controllers\Crud_nventario;
 use App\Models\Post;
 use App\Models\PostMovimientos;
 use App\Models\Provedores;
+use App\Models\Materiales;
+use Faker\Factory;
 
 use function Laravel\Prompts\select;
 
@@ -30,7 +32,7 @@ Route::get('/panel_de_control/Logistica', function () {
     return view('Logistica');
 })->middleware('auth');
 
-Route::get('/prueba', function(){
+Route::post('/prueba', function(){
     /*
     $Post = new Provedores() ;
     $Post->codigo = Faker\Factory::create()->unique()->numberBetween(1000, 9999);
@@ -46,12 +48,30 @@ Route::get('/prueba', function(){
     $POST = Post::find(1 );
     $POST->delete();
     return "Eliminado correctamente";
-    */
+    $request = request();
+    $material = new Materiales();
+        $faker = Factory::create();
+        $request->validate([
+            'nombre' => 'required',
+            'descripcion' => 'required',
+            'unidad_medida' => 'required',
+            'categoria' => 'required',
+            'categoria_especifica'=> 'required'
+        ]);
+        $data = $request->all();
+        $material->nombre = $faker->name(  );
+        $material->descripcion =$faker->text(200);
+        $material->unidad_medida = 'Kilogramos';
+        $material->categoria = $data['categoria'];
+        $material->categoria_especifica = $data['categoria_especifica'];
+        $material->create();
+        return $data;
+        */
 
 });
 
 Route::get('movimientos', [Crud_nventario::class, 'index'])->name('movimientos.index');
-Route::get('provedores', [Crud_nventario::class, 'PostProvedores'])->name('provedores.create');
+Route::post('provedores', [Crud_nventario::class, 'PostMaterial'])->name('materiales.create');
 Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inventario.index');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
