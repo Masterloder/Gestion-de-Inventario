@@ -20,8 +20,8 @@
     },
     año: {
       // Últimos 12 meses como ejemplo; ajustar según necesites
-      labels: ['Noviembre', 'Diciembre', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
-      data: [65000, 70000, 72000, 68000, 75000, 80000, 82000, 87000, 90000, 94000, 98000, 102000]
+      labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
+      data: [65000, 70000, 72000, 68000, 75000, 80000]
     }
   }
 

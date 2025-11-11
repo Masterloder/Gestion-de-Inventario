@@ -1,37 +1,35 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Inventario;
 use App\Models\Provedores;
 use App\Models\Materiales;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class Crud_nventario extends Controller
+class Crud_Materiales extends Controller
 {
     /**
      * Muestra una lista del recurso.
      */
     public function index()
     {
-        $posts = Inventario::all()
-        ->select('id', 'id_material', 'id_almacen', 'cantidad_actual', 'unidad_medida','ubicacion_fisica');
+        $posts = Materiales::all()
+        ->select('id', 'nombre', 'descripcion', 'unidad_medida','categoria','categoria_especifica');
         return $posts;
     }
 
     /**
      * Muestra el formulario para crear un nuevo recurso.
      */
-    public function PostInventario( Request $request): RedirectResponse
+    public function PostMaterial( Request $request): RedirectResponse
     {
         $request->validate([
-            'id_material' => 'required',
-            'id_almacen' => 'required',
-            'cantidad_actual' => 'cantidad_actual',
+            'nombre' => 'required',
+            'descripcion' => 'required',
             'unidad_medida' => 'required',
-            'ubicacion_fisica' => 'required'
+            'categoria' => 'required',
+            'categoria_especifica'=> 'required'
         ]);
         $data = $request->all();
         $this->create($data);
@@ -44,10 +42,11 @@ class Crud_nventario extends Controller
     public function create(array $data){
 
         return Materiales::create([
-            'id_material' => $data['id_material'],
-            'id_almacen' => $data['id_almacen'],
+            'nombre' => $data['nombre'],
+            'descripcion' => $data['descripcion'],
             'unidad_medida' =>$data['unidad_medida'],
-            'ubicacion_fisica' => $data['ubicacion_fisica']
+            'categoria' => $data['categoria'],
+            'categoria_especifica'=> $data['categoria_especifica']
         ]);
 
     }

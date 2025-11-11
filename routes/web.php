@@ -1,8 +1,12 @@
 <?php
 
+use App\Models\Inventario;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Crud_Almacen;
+use App\Http\Controllers\Crud_Materiales;
 use App\Http\Controllers\Crud_nventario;
+use App\Http\Controllers\Crud_Proveedor;
 use App\Models\Post;
 use App\Models\PostMovimientos;
 use App\Models\Provedores;
@@ -32,47 +36,24 @@ Route::get('/panel_de_control/Logistica', function () {
     return view('Logistica');
 })->middleware('auth');
 
-Route::post('/prueba', function(){
-    /*
-    $Post = new Provedores() ;
-    $Post->codigo = Faker\Factory::create()->unique()->numberBetween(1000, 9999);
-    $Post->nombre = Faker\Factory::create()->name();
-    $Post->contacto = Faker\Factory::create()->unique()->safeEmail();
-    $Post->direccion = Faker\Factory::create()->address();
-    $Post->save();
-    return $Post;
+Route::get('/Movimientos', function(){
+    return view('Movimientos');
+})->middleware('auth');
 
-    $POST = Post::orderBy('id', 'DESC')
-    ->select('codigo', 'nombre', 'contacto', 'direccion')
-    ->get();
-    $POST = Post::find(1 );
-    $POST->delete();
-    return "Eliminado correctamente";
-    $request = request();
-    $material = new Materiales();
-        $faker = Factory::create();
-        $request->validate([
-            'nombre' => 'required',
-            'descripcion' => 'required',
-            'unidad_medida' => 'required',
-            'categoria' => 'required',
-            'categoria_especifica'=> 'required'
-        ]);
-        $data = $request->all();
-        $material->nombre = $faker->name(  );
-        $material->descripcion =$faker->text(200);
-        $material->unidad_medida = 'Kilogramos';
-        $material->categoria = $data['categoria'];
-        $material->categoria_especifica = $data['categoria_especifica'];
-        $material->create();
-        return $data;
-        */
+Route::get('/prueba', function(){
+         $Post = new Inventario();
+         $Post = Inventario::find('1');
+         return $Post['id_material'];
 
 });
 
 Route::get('movimientos', [Crud_nventario::class, 'index'])->name('movimientos.index');
-Route::post('provedores', [Crud_nventario::class, 'PostMaterial'])->name('materiales.create');
+Route::post('materiales', [Crud_Materiales::class, 'PostMaterial'])->name('materiales.create');
 Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inventario.index');
+
+Route::post( 'almacenes', [Crud_Almacen::class, 'PostAlmacen'] )->name('Almacen.create');
+
+Route::post('proveedores',[Crud_Proveedor::class,'PostProveedor'])->name('provedores.create');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
