@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Crud_Almacen;
 use App\Http\Controllers\Crud_Materiales;
+use App\Http\Controllers\Crud_Movimientos;
 use App\Http\Controllers\Crud_nventario;
 use App\Http\Controllers\Crud_Proveedor;
 use App\Models\Post;
@@ -54,6 +55,8 @@ Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inven
 Route::post( 'almacenes', [Crud_Almacen::class, 'PostAlmacen'] )->name('Almacen.create');
 
 Route::post('proveedores',[Crud_Proveedor::class,'PostProveedor'])->name('provedores.create');
+
+Route::post('movimientos', [Crud_Movimientos::class, 'PostMovimientoIngreso'])->name('movimiento.ingreso');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');

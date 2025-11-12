@@ -22,10 +22,10 @@
     <div class="mb-3">
         <select class="form-select" name="unidad_medida" id="unidad_medida" required>
             <option value="" disabled >--Elige una medida--</option>
-            <option value="metros cubicos">Metros Cubicos</option>
-            <option value="kilogramos">Kilogramos</option>
-            <option value="litros">litros</option>
-            <option value="unidades">Unidades</option>
+            <option value="M3">Metros Cubicos</option>
+            <option value="Kg">Kilogramos</option>
+            <option value="L">litros</option>
+            <option value="Uds">Unidades</option>
         </select>
          <div class="invalid-feedback">
       Please select a valid state.

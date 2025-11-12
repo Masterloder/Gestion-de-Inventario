@@ -12,11 +12,11 @@ class MaterialesSeeder extends Seeder
     {
         {
             $material = [
-                ['nombre' => 'Madera', 'descripcion' => 'Material natural utilizado en construcción y fabricación de muebles.', 'unidad_medida' => 'metros_cubicos', 'categoria' => 'Materiales Orgánicos', 'categoria_especifica' => 'Estructural'],
-                ['nombre' => 'Acero', 'descripcion' => 'Material metálico resistente y duradero, comúnmente usado en estructuras.', 'unidad_medida' => 'kilogramos', 'categoria' => 'Materiales Metálicos', 'categoria_especifica' => 'Estructural'],
-                ['nombre' => 'Lona', 'descripcion' => 'Material utilizado para cubrir o proteger objetos.', 'unidad_medida' => 'metros_cubicos', 'categoria' => 'Materiales Orgánicos', 'categoria_especifica' => 'Cerramiento'],
-                ['nombre' => 'Vidrio', 'descripcion' => 'Material transparente utilizado en ventanas, botellas y otros productos.', 'unidad_medida' => 'metros_cubicos', 'categoria' => 'Materiales Cerámicos y vítreos', 'categoria_especifica' => 'Cerramiento'],
-                ['nombre' => 'Hormigón', 'descripcion' => 'Material compuesto utilizado en construcción, hecho de cemento, agua y agregados.', 'unidad_medida' => 'metros_cubicos', 'categoria' => 'Materiales Compuestos', 'categoria_especifica' => 'Estructural'],
+                ['nombre' => 'Madera', 'descripcion' => 'Material natural utilizado en construcción y fabricación de muebles.', 'unidad_medida' => 'M3', 'categoria' => 'Materiales Orgánicos', 'categoria_especifica' => 'Estructural'],
+                ['nombre' => 'Acero', 'descripcion' => 'Material metálico resistente y duradero, comúnmente usado en estructuras.', 'unidad_medida' => 'Kg', 'categoria' => 'Materiales Metálicos', 'categoria_especifica' => 'Estructural'],
+                ['nombre' => 'Lona', 'descripcion' => 'Material utilizado para cubrir o proteger objetos.', 'unidad_medida' => 'M3', 'categoria' => 'Materiales Orgánicos', 'categoria_especifica' => 'Cerramiento'],
+                ['nombre' => 'Vidrio', 'descripcion' => 'Material transparente utilizado en ventanas, botellas y otros productos.', 'unidad_medida' => 'M3', 'categoria' => 'Materiales Cerámicos y vítreos', 'categoria_especifica' => 'Cerramiento'],
+                ['nombre' => 'Hormigón', 'descripcion' => 'Material compuesto utilizado en construcción, hecho de cemento, agua y agregados.', 'unidad_medida' => 'M3', 'categoria' => 'Materiales Compuestos', 'categoria_especifica' => 'Estructural'],
             ];
             foreach ($material as $mat) {
                 $m = new Materiales();
