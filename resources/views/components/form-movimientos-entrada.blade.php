@@ -1,4 +1,4 @@
-<form action="{{ route('movimiento.ingreso') }}" method="post" class="row g-3 needs-validation">
+<form action="{{ route('movimientos.ingreso') }}" method="post" class="row g-3 needs-validation">
     @csrf
         <div class="mb-3">
         <select class="form-control" name="id_almacen" id="id_almacen">
@@ -52,16 +52,16 @@
         <select class="form-control" name="materiales" id="materiales">
             <option selected disabled>--Elige un material-</option>
             @php
-            $inventario = DB::table('inventario')->get();
-            $i = count($inventario);
+            $Materiales = DB::table('materiales')->get();
+            $i = count($Materiales);
             $Cont =0;
             @endphp
-            @foreach ($inventario as $i )
+            @foreach ($Materiales as $i )
             @php
-            $cantidad = $inventario[$Cont];
-            $materiales = DB::table('materiales')->where('id',$cantidad->id_material)->first();
+            $cantidad = $Materiales[$Cont];
+            $materiales = DB::table('materiales')->where('id',$cantidad->id)->first();
             $cantidad1[$Cont] = [
-                'cantidad_actual' => $cantidad->cantidad_actual,
+                'cantidad_actual' => '0',
                 'unidad_medida'  => $materiales->unidad_medida
             ];
             $material = $materiales;
@@ -74,57 +74,19 @@
         </select>
     </div>
     <div class="mb-3">
-        @php
-        // Mapear id_material => [cantidad_actual, unidad_medida]
-        $map = [];
-        foreach ($inventario as $inv) {
-            $mat = DB::table('materiales')->where('id', $inv->id_material)->first();
-            $map[$inv->id_material] = [
-            'cantidad_actual' => $inv->cantidad_actual,
-            'unidad_medida' => $mat->unidad_medida ?? ''
-            ];
-        }
-        @endphp
-
-        <label for="cantidad_input" class="form-label" id="cantidad_label">Cantidad Actual del Material: (0)</label>
-        <input type="number" min="0" max="999999" class="form-control" id="cantidad_input" name="cantidad" required>
-
-        <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const cantidades = @json($map);
-            const select = document.getElementById('materiales');
-            const label = document.getElementById('cantidad_label');
-            const input = document.getElementById('cantidad_input');
-
-            const MAX_ALLOWED = 999999;
-            const MAX_DIGITS = String(MAX_ALLOWED).length;
-
-            function actualizar() {
-            const id = select.value;
-            const info = (cantidades && cantidades[id]) ? cantidades[id] : {cantidad_actual: 0, unidad_medida: ''};
-            const cant = Number(info.cantidad_actual) || 0;
-            const unidad = info.unidad_medida || '';
-
-            label.textContent = 'Cantidad Actual del Material: (' + cant + (unidad ? ' ' + unidad : '') + ')';
-            input.max = MAX_ALLOWED;
-            input.setAttribute('maxlength', MAX_DIGITS);
-
-            if (input.value !== '') {
-                if (input.value.length > MAX_DIGITS) input.value = input.value.slice(0, MAX_DIGITS);
-                if (Number(input.value) > MAX_ALLOWED) input.value = String(MAX_ALLOWED);
-            }
-            }
-
-            input.addEventListener('input', function () {
-            if (this.value.length > MAX_DIGITS) this.value = this.value.slice(0, MAX_DIGITS);
-            if (this.value !== '' && Number(this.value) > MAX_ALLOWED) this.value = String(MAX_ALLOWED);
-            if (/^0+\d+/.test(this.value)) this.value = String(Number(this.value));
-            });
-
-            select.addEventListener('change', actualizar);
-            actualizar();
-        });
-        </script>
+        <label for="cantidad" class="form-label">Cantidad A Ingresar</label>
+        <input
+            type="text"
+            inputmode="numeric"
+            pattern="\d{1,8}"
+            class="form-control"
+            id="cantidad"
+            name="cantidad"
+            required
+            maxlength="8"
+            title="Ingresa solo números enteros (máx 8 dígitos)"
+            oninput="this.value = this.value.replace(/\D/g,'').slice(0,8);"
+        />
     </div>
     <button type="submit" class="btn btn-primary">Ingreso de materiales</button>
 </form>

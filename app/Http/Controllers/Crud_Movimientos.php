@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Controllers\Auth\AuthController;
 use App\Models\Inventario;
 use App\Models\Materiales;
 use App\Models\Movimientos;
+use App\Models\Almacenes;
+use App\Models\User;
 use faker\Factory as faker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,76 +20,138 @@ class Crud_Movimientos extends Controller
      */
     public function index()
     {
-        $post = Movimientos::all()->select('id','id_material','id_almacen','cantidad_actual','unidad_medida','ubicacion_fisica');
+        $post = Movimientos::all()->select('id', 'id_material', 'id_almacen', 'cantidad_actual', 'unidad_medida', 'ubicacion_fisica');
         return $post;
     }
 
-    public function PostMovimientoIngreso(Request $request):RedirectResponse
+    public function PostMovimientoIngreso(Request $request): RedirectResponse
     {
         $request->validate([
-            'id_almacen'=>'required',
-            'id_proveedor'=>'required',
-            'fecha_hora'=>'required',
-            'materiales'=>'Required',
-            'cantidad'=>'required'
+            'id_almacen' => 'required',
+            'fecha_hora' => 'required',
+            'materiales' => 'Required',
+            'cantidad' => 'required'
         ]);
-         $data=$request->all();
-         $this->create($data);
+        $data = $request->all();
+        $data1 = $request->all();
+        $this->create($data);
+        $this->createinventario($data1);
 
-            return redirect("/panel_de_control/Logistica")->withSuccess("");
+        return redirect("/panel_de_control/Logistica")->withSuccess("");
     }
 
     public function create($data)
     {
-            $faker = faker::create();
+        $faker = faker::create();
         return Movimientos::create([
-            'tipo_movimiento'   => 'Entrada',
+            'tipo_movimiento'   => 'Salida',
             'fecha_hora'        => $data['fecha_hora'],
             'cantidad'          => $data['cantidad'],
-            'numero_referencia' => $faker->bothify('Mov-####-Ingr-####'),
+            'numero_referencia' => $faker->bothify('Mov-####-Retir-####'),
             'id_material'       => $data['materiales'],
             'id_almacen'        => $data['id_almacen'],
             'id_usuario'        => auth()->id(),
         ]);
     }
-
-    /**
-     * Store a newly createmateriales resource in storage.
-     */
-    public function store(Request $request)
+    public function createinventario($data1)
     {
-        //
+
+        // buscar fila existente por almacen + material
+        $inventario = Inventario::where('id_almacen', $data1['id_almacen'])
+            ->where('id_material', $data1['materiales'])
+            ->first();
+        $material = Materiales::find($data1['materiales'])->first();
+
+        if ($inventario) {
+            // sumar cantidad a la columna cantidad_actual
+            $inventario->increment('cantidad_actual', $data1['cantidad']);
+            return $inventario;
+        }
+
+        // si no existe, crear nueva fila
+        return Inventario::create([
+            'id_material'     => $data1['materiales'],
+            'id_almacen'      => $data1['id_almacen'],
+            'cantidad_actual' => $data1['cantidad'],
+            'unidad_medida'   => $material['unidad_medida'],
+            'punto_reorden' => '0'
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function MovimientoSalida(Request $request): RedirectResponse
     {
-        //
+
+        $request->validate([
+            'id_almacen' => 'required',
+            'fecha_hora' => 'required',
+            'materiales' => 'Required',
+            'cantidad' => 'required'
+        ]);
+        $data = $request->all();
+        $data1 = $request->all();
+        $this->create($data);
+        $this->SalidaInventario($data1);
+
+        return redirect("/Movimientos/tabla")->withSuccess("");
+    }
+    public function SalidaInventario($data1)
+    {
+
+        // buscar fila existente por almacen + material
+        $inventario = Inventario::where('id_almacen', $data1['id_almacen'])
+            ->where('id_material', $data1['materiales'])
+            ->first();
+        $material = Materiales::find($data1['materiales'])->first();
+
+        if ($inventario) {
+            // resta cantidad a la columna cantidad_actual
+            $inventario->decrement('cantidad_actual', $data1['cantidad']);
+            return $inventario;
+        }
+
+        // si no existe, crear nueva fila
+        return Inventario::create([
+            'id_material'     => $data1['materiales'],
+            'id_almacen'      => $data1['id_almacen'],
+            'cantidad_actual' => $data1['cantidad'],
+            'unidad_medida'   => $material['unidad_medida'],
+            'punto_reorden' => '0'
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    public function vistaAlmacen() 
+{
+    // 1. Traer Almacenes
+    $almacenes = Almacenes::all();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    // 2. Traer Inventario con Materiales (Eager Loading)
+    $inventario = Inventario::with('material')->get();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+    // 3. Preparar mapa para JavaScript
+    $mapaInventario = $inventario->mapWithKeys(function ($item) {
+        return [
+            $item->id_material => [ // La clave será el ID del material
+                'cantidad_actual' => $item->cantidad_actual,
+                'unidad_medida'   => $item->material->unidad_medida ?? ''
+            ]
+        ];
+    });
+
+    // 4. Enviar a la vista
+    return view('/movimientos', compact('almacenes', 'inventario', 'mapaInventario'));
+}
+
+public function Movimientos(){
+        // 1. traer movimientos de materiales
+        $almacenes = Almacenes::select('id','nombre','direccion');
+        // 2. traer los datos de los materiales
+        $materiales = Materiales::select('id','nombre','descripcion','unidad_medida')->get();
+        // 3. traer datos del los usuarios
+        $usuarios = User::select('id','name','rol')->get();
+
+        //4 traer datos de movimientos relacionados en Movimiento_inventario
+        $movimientos = Movimientos::with('almacenes','materiales','usuarios')->get();
+
+        return view('/prueba', compact('almacenes','materiales','usuarios','movimientos'));
+}
 }

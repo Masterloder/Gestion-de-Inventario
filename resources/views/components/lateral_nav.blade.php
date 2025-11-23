@@ -8,7 +8,7 @@
                     data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <img
-                        src="images/Usuarios/Usuario.jpg"
+                        src="{{asset('images/Usuarios/Usuario.jpg')}}"
                         alt=""
                         width="32"
                         height="32"
@@ -17,7 +17,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
                     <li><a class="dropdown-item" href="#">Configuración</a></li>
-                    <li><a class="dropdown-item" href="#">Perfil</a></li>
+                    <li><a class="dropdown-item" href="{{ asset('/Perfil') }}">Perfil</a></li>
                     <li>
                         <hr class="dropdown-divider" />
                     </li>

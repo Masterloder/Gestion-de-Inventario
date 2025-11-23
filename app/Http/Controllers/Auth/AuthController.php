@@ -18,6 +18,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function InformacionUser(){
+       $user = User::all()->first();
+       return view( 'Perfil', compact('user'));
+    }
+
     public function registration(): View
     {
         return view('auth.registration');

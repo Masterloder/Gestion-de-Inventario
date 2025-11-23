@@ -1,84 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="theme-color" content="#712cf9" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/sidebars.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    <style>
-        main {
-            margin-top: -12px;
-            padding: auto;
-        }
-
-        .bi {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-        }
-
-        /*
- * Sidebar
- */
-
-        @media (min-width: 768px) {
-            .sidebar .offcanvas-lg {
-                position: -webkit-sticky;
-                position: sticky;
-                top: 48px;
-            }
-
-            .navbar-search {
-                display: block;
-            }
-        }
-
-        .sidebar .nav-link {
-            font-size: .875rem;
-            font-weight: 500;
-        }
-
-        .sidebar .nav-link.active {
-            color: #2470dc;
-        }
-
-        .sidebar-heading {
-            font-size: .75rem;
-        }
-
-        /*
- * Navbar
- */
-
-        .navbar-brand {
-            padding-top: .75rem;
-            padding-bottom: .75rem;
-            background-color: rgba(0, 0, 0, .25);
-            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
-        }
-
-        .navbar .form-control {
-            padding: .75rem 1rem;
-        }
-    </style>
-</head>
-
-<body>
-    @include('components.lateral_nav')
-    @include('components.graficas')
-
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="{{ asset('assets/js/chart.js') }}" ></script>
-    <script>document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
     // Opciones generales para limpiar los gráficos (sin ejes molestos)
     var gradientChartOptionsConfiguration = {
@@ -112,9 +32,9 @@
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
+            labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
             datasets: [{
-                label: "Materiales",
+                label: "Performance",
                 fill: true,
                 backgroundColor: gradientStroke,
                 borderColor: '#e14eca', // Rosa neón
@@ -140,7 +60,7 @@
     new Chart(ctx2, {
         type: 'line',
         data: {
-            labels: ['JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
+            labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
             datasets: [{
                 label: "Shipments",
                 fill: true,
@@ -179,7 +99,7 @@
     new Chart(ctx4, {
         type: 'line',
         data: {
-            labels: ['JUL', 'AGO', 'SEP', 'OCT', 'NOV'],
+            labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV'],
             datasets: [{
                 label: "Tasks",
                 fill: true,
@@ -193,7 +113,4 @@
         },
         options: gradientChartOptionsConfiguration
     });
-});</script>
-</body>
-
-</html>
+});

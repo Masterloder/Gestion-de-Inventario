@@ -151,7 +151,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link d-flex align-items-center gap-2" href="/Movimientos">
+                  <a class="nav-link d-flex align-items-center gap-2" href="/Movimientos/tabla">
                     <svg class="bi" aria-hidden="true">
                       <use xlink:href="#file-earmark"></use>
                     </svg>
@@ -171,7 +171,7 @@
                     <svg class="bi" aria-hidden="true">
                       <use xlink:href="#people"></use>
                     </svg>
-                    Clientes
+                    Proveedores
                   </a>
                 </li>
                 <li class="nav-item">
