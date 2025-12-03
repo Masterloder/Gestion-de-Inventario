@@ -20,19 +20,18 @@ Route::get('/Inicio_de_sesion', function () {
 Route::get('/registro', function () {
     return view('registro');
 });
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth');
 
-Route::get('/panel_de_control/Logistica', function () {
-    return view('Logistica');
-})->middleware('auth');
 
-Route::get('Movimientos/Entrada_Inventario',function(){
-    return view('Entrada_Inventario');
-})->Middleware('auth');
+Route::get('/dashboard', function () {return view('dashboard'); })->middleware('auth');
 
-Route::get('/prueba', [Crud_Movimientos::class, 'Movimientos'])->middleware('auth');
+
+//inventario !!!!cambiar nombre!!!!
+Route::get('/panel_de_control/Logistica',[Crud_nventario::class,'VistaInventario'])->middleware('auth');
+//******************************************************************************************************** */
+
+
+
+Route::get('Movimientos/Entrada_Inventario',function(){return view('Entrada_Inventario');})->Middleware('auth');
 
 Route::get('movimientos', [Crud_nventario::class, 'index'])->name('movimientos.index');
 Route::post('materiales', [Crud_Materiales::class, 'PostMaterial'])->name('materiales.create');
@@ -42,15 +41,21 @@ Route::post( 'almacenes', [Crud_Almacen::class, 'PostAlmacen'] )->name('Almacen.
 
 Route::post('proveedores',[Crud_Proveedor::class,'PostProveedor'])->name('provedores.create');
 
-Route::post('movimientos', [Crud_Movimientos::class, 'PostMovimientoIngreso'])->name('movimientos.ingreso');
+Route::post('/movimientos/tabla/Ingreso', [Crud_Movimientos::class, 'PostMovimientoIngreso'])->name('movimientos.ingreso');
+// Ruta para actualizar (Método PUT)
+Route::put('/movimientos/{movimiento}', [Crud_Movimientos::class, 'update'])->name('movimientos.update');
+// Ruta para eliminar (Soft Delete, Método DELETE)
+Route::delete('/movimientos/{movimiento}', [Crud_Movimientos::class, 'destroy'])->name('movimientos.destroy');
+
 
 Route::get('Perfil',[AuthController::class, 'InformacionUser'])->name('datos.usuario');
 
 Route::get('/panel_de_control',[DashboardController::class, 'index'])->middleware('auth');
 
 
-Route::get('/Movimientos/tabla',[Crud_Movimientos::class,'vistaAlmacen'])->name('movimiento.salida.ver');
-Route::post('/Movimientos/tabla/salida',[Crud_Movimientos::class,'MovimientoSalida'])->name('movimiento.salida');
+Route::get('/Movimientos/tabla',[Crud_Movimientos::class,'Movimientos'])->middleware('auth');
+Route::post('/Movimientos/tabla/salida',[Crud_Movimientos::class,'MovimientoSalida'])->name('movimientos.salida');
+Route::post('/Movimientos/tabla/salida2',[Crud_Movimientos::class,'MovimientoSalida2'])->name('movimientos.salida2');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');

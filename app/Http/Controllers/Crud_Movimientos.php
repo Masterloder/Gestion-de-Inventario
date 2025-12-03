@@ -7,60 +7,75 @@ use App\Models\Inventario;
 use App\Models\Materiales;
 use App\Models\Movimientos;
 use App\Models\Almacenes;
+use App\Models\Provedores;
 use App\Models\User;
 use faker\Factory as faker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Symfony\Contracts\Service\Attribute\Required;
+
+use function Laravel\Prompts\error;
 
 class Crud_Movimientos extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $post = Movimientos::all()->select('id', 'id_material', 'id_almacen', 'cantidad_actual', 'unidad_medida', 'ubicacion_fisica');
-        return $post;
+        // Si solo necesitas columnas de la tabla 'movimientos':
+        $movimientos = Movimientos::select('id', 'id_material', 'id_almacen', 'cantidad', 'fecha_operacion')
+            ->get();
+
+        return $movimientos;
     }
 
+    /**
+     * Maneja la creación de un nuevo movimiento de INGRESO y actualiza el inventario.
+     */
     public function PostMovimientoIngreso(Request $request): RedirectResponse
     {
         $request->validate([
             'id_almacen' => 'required',
-            'fecha_hora' => 'required',
-            'materiales' => 'Required',
-            'cantidad' => 'required'
+            'fecha_operacion' => 'required',
+            'id_material' => 'required',
+            'ubicacion_entrega' => 'no',
+            'cantidad' => 'required|integer|min:1',
+            'id_proveedor' => 'required|exists:proveedores,id'
         ]);
-        $data = $request->all();
         $data1 = $request->all();
-        $this->create($data);
-        $this->createinventario($data1);
-
-        return redirect("/panel_de_control/Logistica")->withSuccess("");
-    }
-
-    public function create($data)
-    {
-        $faker = faker::create();
-        return Movimientos::create([
-            'tipo_movimiento'   => 'Salida',
-            'fecha_hora'        => $data['fecha_hora'],
-            'cantidad'          => $data['cantidad'],
-            'numero_referencia' => $faker->bothify('Mov-####-Retir-####'),
-            'id_material'       => $data['materiales'],
-            'id_almacen'        => $data['id_almacen'],
-            'id_usuario'        => auth()->id(),
+        $referencia = $this->generateUniqueReference('Ingreso');
+        // 1. Registrar el movimiento de Ingreso
+        Movimientos::create([
+            'tipo_movimiento'   => 'Entrada', //
+            'fecha_operacion'   => $data1['fecha_operacion'],
+            'cantidad'          => $data1['cantidad'],
+            'numero_referencia' => $referencia,
+            'id_material'       => $data1['id_material'],
+            'id_proveedor'      => $data1['id_proveedor'],
+            'id_almacen'        => $data1['id_almacen'],
+            'ubicacion_entrega' => '0',
+            'id_usuario'        => auth()->id()
         ]);
-    }
-    public function createinventario($data1)
-    {
 
+        // 2. Actualizar/Crear en el Inventario
+        $this->updateOrCreateInventario($data1);
+
+        return redirect("/panel_de_control/Logistica")->withSuccess("Ingreso de material registrado.");
+    }
+
+    /**
+     * Lógica unificada para actualizar o crear un registro de Inventario (USADO SOLO PARA INGRESO).
+     */
+    public function updateOrCreateInventario($data1)
+    {
         // buscar fila existente por almacen + material
         $inventario = Inventario::where('id_almacen', $data1['id_almacen'])
-            ->where('id_material', $data1['materiales'])
+            ->where('id_material', $data1['id_material'])
             ->first();
-        $material = Materiales::find($data1['materiales'])->first();
+
+        $material = Materiales::find($data1['id_material']);
+
+        // Si no se encuentra el material, lanzamos un error o simplemente detenemos la operación
+        if (!$material) {
+            throw new \Exception("Material no encontrado.");
+        }
 
         if ($inventario) {
             // sumar cantidad a la columna cantidad_actual
@@ -70,88 +85,229 @@ class Crud_Movimientos extends Controller
 
         // si no existe, crear nueva fila
         return Inventario::create([
-            'id_material'     => $data1['materiales'],
+            'id_material'     => $data1['id_material'],
             'id_almacen'      => $data1['id_almacen'],
             'cantidad_actual' => $data1['cantidad'],
-            'unidad_medida'   => $material['unidad_medida'],
-            'punto_reorden' => '0'
+            'punto_reorden'   => '0'
         ]);
     }
 
+
+    protected function generateUniqueReference(string $tipo_movimiento): string
+    {
+        $faker = Faker::create();
+
+        // 1. Obtener el último ID de Movimiento para el incremento
+        // Usamos el ID de la tabla como base para asegurar la unicidad del segmento ####.
+        // Aunque no es un contador perfecto, garantiza un número único.
+        $lastMovementId = Movimientos::max('id') ?? 0;
+        $nextId = $lastMovementId + 1;
+
+        // 2. Formatear el segmento incremental (ej: 0001, 0002)
+        $incrementalSegment = str_pad($nextId, 4, '0', STR_PAD_LEFT);
+
+        // 3. Crear el segmento aleatorio (4 caracteres alfanuméricos)
+        // El bothify crea una cadena como 'aBc-123' usando '#'=dígitos y '?'=letras
+        $randomSegment = $faker->bothify('####');
+
+        // 4. Estandarizar el tipo de movimiento para la referencia
+        $typeSegment = strtoupper(substr($tipo_movimiento, 0, 3)); // ING o SAL
+
+        // 5. Construir la referencia completa: MOV-####-TIPO-$$$$
+        $reference = "MOV-{$incrementalSegment}-{$typeSegment}-{$randomSegment}";
+
+        return $reference;
+    }
+
+
+
+
+    /**
+     * Maneja la creación de un nuevo movimiento de SALIDA y actualiza el inventario.
+     */
     public function MovimientoSalida(Request $request): RedirectResponse
     {
-
+        // validar aquí que la cantidad a sacar no exceda la cantidad en inventario.
         $request->validate([
-            'id_almacen' => 'required',
-            'fecha_hora' => 'required',
-            'materiales' => 'Required',
+            'id_almacen1' => 'required',
+            'fecha_operacion' => 'required',
+            'ubicacion_entrega' => 'required',
+            'id_material1' => 'required',
+            'cantidad' => 'required'
+        ]);
+        
+        $data = $request->all();
+        $referencia = $this->generateUniqueReference('Salida');
+        // 1. Actualizar el Inventario (restando)
+        $result = $this->decrementInventario($data);
+        if (!$result) {
+            return redirect("/Movimientos/tabla")->withErrors("Stock insuficiente en el almacén seleccionado.");
+        }
+                // 2. Registrar el movimiento de Salida
+        Movimientos::create([
+            'tipo_movimiento'   => 'Salida', // Correcto: Salida
+            'fecha_operacion'   => $data['fecha_operacion'],
+            'cantidad'          => $data['cantidad'],
+            'numero_referencia' => $referencia, 
+            'id_material'       => $data['id_material1'],
+            'id_proveedor'      => null, // La salida no requiere proveedor
+            'id_almacen'        => $data['id_almacen1'],
+            'destino'           => $data['ubicacion_entrega'],
+            'id_usuario'        => auth()->id()
+        ]);
+
+        return redirect("/Movimientos/tabla")->withSuccess("Salida de material registrada.");
+    }
+        //salida con el material seleccionado automaticamente
+     public function MovimientoSalida2(Request $request): RedirectResponse
+    {
+        
+        // validar aquí que la cantidad a sacar no exceda la cantidad en inventario.
+        $request->validate([
+            'id_almacen1' => 'required',
+            'fecha_operacion' => 'required',
+            'id_material1' => 'required',
             'cantidad' => 'required'
         ]);
         $data = $request->all();
-        $data1 = $request->all();
-        $this->create($data);
-        $this->SalidaInventario($data1);
+        $referencia = $this->generateUniqueReference('Salida');
+        // 1. Actualizar el Inventario (restando)
+        $result = $this->decrementInventario($data);
+        if (!$result) {
+            return redirect("/Movimientos/tabla")->withErrors("Stock insuficiente en el almacén seleccionado.");
+        }
+        
+                // 2. Registrar el movimiento de Salida
+        Movimientos::create([
+            'tipo_movimiento'   => 'Salida', // Correcto: Salida
+            'fecha_operacion'   => $data['fecha_operacion'],
+            'cantidad'          => $data['cantidad'],
+            'numero_referencia' => $referencia, // Cambiar ref
+            'id_material'       => $data['id_material1'],
+            'id_proveedor'      => null, // La salida no requiere proveedor
+            'id_almacen'        => $data['id_almacen1'],
+            'destino'           => null,
+            'id_usuario'        => auth()->id()
+        ]);
 
-        return redirect("/Movimientos/tabla")->withSuccess("");
+        return redirect("/Movimientos/tabla")->withSuccess("Salida de material registrada.");
     }
-    public function SalidaInventario($data1)
+
+    /**
+     * Lógica para restar cantidad del Inventario (USADO SOLO PARA SALIDA).
+     */
+    public function decrementInventario($data)
     {
-
         // buscar fila existente por almacen + material
-        $inventario = Inventario::where('id_almacen', $data1['id_almacen'])
-            ->where('id_material', $data1['materiales'])
+        $inventario = Inventario::where('id_almacen', $data['id_almacen1'])
+            ->where('id_material', $data['id_material1'])
             ->first();
-        $material = Materiales::find($data1['materiales'])->first();
 
-        if ($inventario) {
-            // resta cantidad a la columna cantidad_actual
-            $inventario->decrement('cantidad_actual', $data1['cantidad']);
-            return $inventario;
+        // No se puede sacar stock si no existe la fila.
+        if (!$inventario) {
+            return false; // Stock insuficiente / No existe
         }
 
-        // si no existe, crear nueva fila
-        return Inventario::create([
-            'id_material'     => $data1['materiales'],
-            'id_almacen'      => $data1['id_almacen'],
-            'cantidad_actual' => $data1['cantidad'],
-            'unidad_medida'   => $material['unidad_medida'],
-            'punto_reorden' => '0'
-        ]);
+        //Validar que haya suficiente stock antes de restar
+        if ($inventario->cantidad_actual < $data['cantidad']) {
+            return false; // Stock insuficiente
+        }
+
+        // resta cantidad a la columna cantidad_actual
+        $inventario->decrement('cantidad_actual', $data['cantidad']);
+        return $inventario;
     }
 
-    public function vistaAlmacen() 
-{
-    // 1. Traer Almacenes
-    $almacenes = Almacenes::all();
+    public function vistaAlmacen()
+    {
+        // 1. Traer Almacenes
+        $almacenes = Almacenes::all();
 
-    // 2. Traer Inventario con Materiales (Eager Loading)
-    $inventario = Inventario::with('material')->get();
+        // 2. Traer Inventario con Materiales (Eager Loading)
+        $inventario = Inventario::with('material')->get();
 
-    // 3. Preparar mapa para JavaScript
-    $mapaInventario = $inventario->mapWithKeys(function ($item) {
-        return [
-            $item->id_material => [ // La clave será el ID del material
+        // 3. Preparar mapa para JavaScript
+        $mapaInventario = $inventario->mapWithKeys(function ($item) {
+            return [
+                $item->id_material => [ // La clave será el ID del material
+                    'cantidad_actual' => $item->cantidad_actual,
+                    'unidad_medida'   => $item->material->unidad_medida ?? ''
+                ]
+            ];
+        });
+
+        // 4. Enviar a la vista
+        return view('/movimientos', compact('almacenes', 'inventario', 'mapaInventario'));
+    }
+
+    public function update(Request $request, Movimientos $movimiento)
+    {
+        // 1. Validar los datos de entrada
+        $request->validate([
+            'cantidad' => 'required|integer|min:0',
+            'numero_referencia' => 'nullable|string|max:255',
+            // ... otras validaciones
+        ]);
+
+        // 2. Actualizar el modelo
+        $movimiento->update($request->only(['cantidad', 'numero_referencia']));
+
+        // 3. Redirigir o devolver una respuesta
+        return redirect()->route('movimientos.index')->with('success', 'Movimiento actualizado correctamente.');
+    }
+
+
+    public function destroy(Movimientos $movimiento)
+    {
+        // Soft delete: establece la columna 'deleted_at'
+        $movimiento->delete();
+
+        return redirect()->route('/Movimientos/tabla')->with('success', 'Movimiento eliminado (Soft Delete) correctamente.');
+    }
+
+
+
+    public function Movimientos()
+    {
+        //Carga Anticipada (Eager Loading) de las 4 relaciones
+        $movimientos = Movimientos::with([
+            'tipoMovimiento',
+            'materiales',
+            'almacenes',
+            'trabajador'
+        ])->orderBy('fecha_operacion', 'desc')->get(); // Ordenar por fecha
+
+        // Datos para el formulario (modal)
+        $almacenes = Almacenes::all(['id', 'nombre', 'direccion']);
+        $proveedores = Provedores::all(['id', 'nombre', 'correo', 'telefono']);
+        $materiales = Materiales::all(['id', 'nombre', 'unidad_medida', 'categoria', 'categoria_especifica']);
+        $trabajadores = User::all(['id', 'name']);
+
+        //Obtener el inventario completo, con Eager Loading, que es la fuente de verdad.
+        // Solo incluimos items con cantidad_actual > 0
+        $inventario = Inventario::with(['material', 'almacen'])
+            ->where('cantidad_actual', '>', 0)
+            ->get();
+
+        $mapaInventario = $inventario->mapWithKeys(function ($item) {
+            // La clave única es la combinación del material y el almacén
+            $key = "{$item->id_material}-{$item->id_almacen}";
+
+            return [$key => [
                 'cantidad_actual' => $item->cantidad_actual,
-                'unidad_medida'   => $item->material->unidad_medida ?? ''
-            ]
-        ];
-    });
+                'unidad_medida'   => $item->material->unidad_medida ?? '',
+            ]];
+        });
 
-    // 4. Enviar a la vista
-    return view('/movimientos', compact('almacenes', 'inventario', 'mapaInventario'));
-}
-
-public function Movimientos(){
-        // 1. traer movimientos de materiales
-        $almacenes = Almacenes::select('id','nombre','direccion');
-        // 2. traer los datos de los materiales
-        $materiales = Materiales::select('id','nombre','descripcion','unidad_medida')->get();
-        // 3. traer datos del los usuarios
-        $usuarios = User::select('id','name','rol')->get();
-
-        //4 traer datos de movimientos relacionados en Movimiento_inventario
-        $movimientos = Movimientos::with('almacenes','materiales','usuarios')->get();
-
-        return view('/prueba', compact('almacenes','materiales','usuarios','movimientos'));
-}
+        // Pasamos la colección optimizada a la vista.
+        return view('/Movimientos', compact(
+            'movimientos',
+            'mapaInventario',
+            'almacenes',
+            'proveedores',
+            'materiales',
+            'inventario',
+            'trabajadores'
+        ));
+    }
 }

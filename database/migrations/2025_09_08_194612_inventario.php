@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('id_material')->constrained('materiales');
             $table->foreignId('id_almacen')->constrained('almacenes');
             $table->decimal('cantidad_actual', 10, 2);
-            $table->enum('unidad_medida', ['M3', 'Kg', 'L', 'Uds']);
             $table->decimal('punto_reorden', 10, 2);
             $table->string('ubicacion_fisica')->nullable();
             $table->timestamps();

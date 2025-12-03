@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('movimientos_inventario', function (Blueprint $table) {
             $table->id();
             $table->enum('tipo_movimiento', ['Entrada', 'Salida', 'Ajuste']);
-            $table->timestamp('fecha_hora')->useCurrent();
+            $table->timestamp('fecha_operacion')->useCurrent();
             $table->decimal('cantidad', 10, 2);
             $table->string('numero_referencia')->nullable();
             $table->foreignId('id_material')->constrained('materiales');
             $table->foreignId('id_almacen')->constrained('almacenes');
             $table->foreignId('id_usuario')->constrained('users');
             $table->foreignId('id_proveedor')->nullable()->constrained('proveedores');
-            $table->foreignId('id_sector')->nullable()->constrained('sectores');
+            $table->string('destino')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
