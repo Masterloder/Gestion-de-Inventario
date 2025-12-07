@@ -23,6 +23,11 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function movimientos()
+    {
+        return $this->hasMany(Movimientos::class, 'id_usuario');
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -82,4 +82,21 @@ class Crud_nventario extends Controller
             'trabajadores' => $trabajadores,
         ]);
     }
+
+    public function destroy(Inventario $inventario)
+    {
+        // 1. Ejecutar el Soft Delete
+        try {
+            // El método delete() marcará el campo 'deleted_at'
+            $inventario->delete();
+            // 2. Redirección con Mensaje de Éxito
+            return redirect()->route('/panel_de_control/Logistica') // Redirige a la lista principal de inventario
+                             ->with('warning', 'El registro de Inventario #' . $inventario->id . ' ha sido marcado como baja (Soft Delete).');
+
+        } catch (\Exception $e) {
+
+            return back() // Vuelve a la página anterior
+                ->with('error', 'Ocurrió un error al intentar eliminar el registro de inventario. Por favor, inténtalo de nuevo.');
+        }
+    }
 }

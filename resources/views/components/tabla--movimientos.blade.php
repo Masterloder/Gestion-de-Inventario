@@ -125,6 +125,7 @@
                                          <p><strong>Descripción del Material:</strong> {{ $movimiento->materiales->descripcion ?? 'N/A' }}</p>
                                          <hr>
                                          <p><strong>Almacén:</strong> {{ $movimiento->almacenes->nombre ?? 'N/A' }}</p>
+                                         <p><strong>Destino:</strong> {{ $movimiento->destino ?? 'N/A' }}</p>
                                          <p><strong>Trabajador:</strong> {{ $movimiento->trabajador->name ?? 'N/A' }}</p>
                                          <p><strong>Referencia:</strong> {{ $movimiento->numero_referencia }}</p>
                                          <p><strong>Cantidad:</strong> {{ $movimiento->cantidad }}</p>

@@ -47,4 +47,9 @@ class Movimientos extends Model
         // Asumiendo que la clave foránea es 'id_usuario'
         return $this->belongsTo(User::class, 'id_usuario');
     }
+
+    public function Destino()
+    {
+        return $this->belongsTo(Movimientos::class,'destino');
+    }
 }

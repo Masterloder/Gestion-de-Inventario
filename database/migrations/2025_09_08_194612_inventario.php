@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('cantidad_actual', 10, 2);
             $table->decimal('punto_reorden', 10, 2);
             $table->string('ubicacion_fisica')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -33,8 +33,8 @@
                     <strong class="d-none d-sm-inline">Administrador</strong>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
-                    <li><a class="dropdown-item" href="#">Configuración</a></li>
-                    <li><a class="dropdown-item" href="{{ asset('profile') }}">Perfil</a></li>
+                    <li><a class="dropdown-item" href="{{ asset('configuracion') }}">Configuración</a></li>
+                    <li><a class="dropdown-item" href="{{ asset('Perfil') }}">Perfil</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li>
                         <a class="dropdown-item" href="{{ asset('logout') }}"

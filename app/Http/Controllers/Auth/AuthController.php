@@ -13,14 +13,22 @@ use Illuminate\Http\RedirectResponse;
 class AuthController extends Controller
 {
 
-    public function index(): View
+    public function index(Request $request): View
     {
+        // Verifica si el usuario NO ha iniciado sesión
+        if (!Auth::check()) {
+            // Redirige al usuario a la ruta de inicio de sesión
+            return view('Inicion_de_sesion');
+        }
+
+        // Si ha iniciado sesión, continúa con la lógica del controlador
         return view('auth.login');
     }
 
-    public function InformacionUser(){
-       $user = User::all()->first();
-       return view( 'Perfil', compact('user'));
+    public function InformacionUser()
+    {
+        $user = User::all()->first();
+        return view('Perfil', compact('user'));
     }
 
     public function registration(): View

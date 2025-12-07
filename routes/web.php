@@ -22,6 +22,16 @@ Route::get('/registro', function () {
 });
 
 
+Route::middleware('auth')->group(function () {
+
+    Route::get('/configuracion', function () { return view('configuracion.index');});
+
+    Route::get('/Proveedores',function(){ return view('proveedores.index');});
+    
+});
+
+
+
 Route::get('/dashboard', function () {return view('dashboard'); })->middleware('auth');
 
 
@@ -36,6 +46,7 @@ Route::get('Movimientos/Entrada_Inventario',function(){return view('Entrada_Inve
 Route::get('movimientos', [Crud_nventario::class, 'index'])->name('movimientos.index');
 Route::post('materiales', [Crud_Materiales::class, 'PostMaterial'])->name('materiales.create');
 Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inventario.index');
+Route::delete('inventario',[Crud_nventario::class,'destroy'])->name('inventarios.destroy');
 
 Route::post( 'almacenes', [Crud_Almacen::class, 'PostAlmacen'] )->name('Almacen.create');
 
@@ -51,6 +62,7 @@ Route::delete('/movimientos/{movimiento}', [Crud_Movimientos::class, 'destroy'])
 Route::get('Perfil',[AuthController::class, 'InformacionUser'])->name('datos.usuario');
 
 Route::get('/panel_de_control',[DashboardController::class, 'index'])->middleware('auth');
+Route::get('/dashboard/movimientos-periodo', [DashboardController::class, 'getMovimientosPorPeriodo'])->middleware('auth');
 
 
 Route::get('/Movimientos/tabla',[Crud_Movimientos::class,'Movimientos'])->middleware('auth');

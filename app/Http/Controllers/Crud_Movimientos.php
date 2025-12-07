@@ -242,19 +242,48 @@ class Crud_Movimientos extends Controller
 
     public function update(Request $request, Movimientos $movimiento)
     {
-        // 1. Validar los datos de entrada
         $request->validate([
-            'cantidad' => 'required|integer|min:0',
-            'numero_referencia' => 'nullable|string|max:255',
-            // ... otras validaciones
+            // 'id_material' debe existir en la tabla 'materiales'
+            'id_material'       => 'required|exists:materiales,id',
+            // 'id_usuario' debe existir en la tabla 'users' (o la tabla de tus trabajadores)
+            'id_usuario'      => 'required|exists:users,id',
+            // 'cantidad' debe ser un número entero, requerido y mayor que 0
+            'cantidad'          => 'required|integer|min:1',
+            // 'numero_referencia' es opcional y debe ser una cadena de máximo 50 caracteres
+            'numero_referencia'     => 'nullable|string|max:50',
+        ], [
+            // Mensajes de error personalizados para mejor UX
+            'id_material.required' => 'Debes seleccionar un material.',
+            'id_material.exists'   => 'El material seleccionado no es válido.',
+            'id_usuario.required'  => 'Debes seleccionar un trabajador.',
+            'id_usuario.exists'    => 'El trabajador seleccionado no es válido.',
+            'cantidad.required'    => 'La cantidad es obligatoria.',
+            'cantidad.integer'     => 'La cantidad debe ser un número entero.',
+            'cantidad.min'         => 'La cantidad debe ser al menos 1.',
         ]);
+        
+        // 2. Actualización del Movimiento
+        try {
+            $movimiento->update([
+                'id_material'       => $request->id_material,
+                'id_usuario'        => $request->id_usuario,
+                'cantidad'          => $request->cantidad,
+                'numero_referencia' => $request->numero_referencia,
+                // Puedes agregar otros campos aquí si son necesarios
+            ]);
+            
+            // 3.Redirección con Mensaje de Éxito
+            return redirect()->route('movimientos.index') // O la ruta que uses para la tabla principal
+                             ->with('success', 'El movimiento se ha actualizado correctamente.');
 
-        // 2. Actualizar el modelo
-        $movimiento->update($request->only(['cantidad', 'numero_referencia']));
-
-        // 3. Redirigir o devolver una respuesta
-        return redirect()->route('movimientos.index')->with('success', 'Movimiento actualizado correctamente.');
+        } catch (\Exception $e) {
+            
+            return back() // Vuelve al formulario
+                ->withInput() // Mantiene los datos que el usuario ingresó
+                ->with('error', 'Ocurrió un error al intentar actualizar el movimiento. Por favor, inténtalo de nuevo.');
+        }
     }
+    
 
 
     public function destroy(Movimientos $movimiento)
@@ -274,7 +303,8 @@ class Crud_Movimientos extends Controller
             'tipoMovimiento',
             'materiales',
             'almacenes',
-            'trabajador'
+            'trabajador',
+            'destino'
         ])->orderBy('fecha_operacion', 'desc')->get(); // Ordenar por fecha
 
         // Datos para el formulario (modal)

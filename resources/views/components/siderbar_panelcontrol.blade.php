@@ -120,6 +120,11 @@
              Dashboard
            </a>
          </li>
+         <li class="nav-item">
+           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset('/panel_de_control/Logistica') }}">
+             <i class="bi bi-pc-display fs-5"></i> Inventario
+           </a>
+         </li>
 
          <li class="nav-item">
            <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset('/Movimientos/tabla') }}">
@@ -127,12 +132,7 @@
            </a>
          </li>
          <li class="nav-item">
-           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset('/panel_de_control/Logistica') }}">
-             <i class="bi bi-pc-display fs-5"></i> Inventario
-           </a>
-         </li>
-         <li class="nav-item">
-           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="#">
+           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset( '/Proveedores') }}">
              <i class="bi bi-people fs-5"></i> Proveedores
            </a>
          </li>
@@ -164,7 +164,7 @@
          </li>
 
          <li class="nav-item">
-           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset('Perfil') }}">
+           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset('/configuracion') }}">
              <i class="bi bi-gear fs-5"></i>
              Configuración
            </a>

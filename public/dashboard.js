@@ -1,29 +1,28 @@
-/* globals Chart:false */
+
 
 (() => {
   'use strict'
 
   // Obtener canvas
   const ctx = document.getElementById('myChart')
+  const ctxMovimientos = document.getElementById('movimientosChart').getContext('2d');
 
-  if (!ctx) return
-  // Datos de ejemplo para semana, mes y año
-  const datasets = {
-    semana: {
-      labels: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
-      data: [12000, 21345, 18483, 24003, 23489, 24092, 25530]
+  // Decodifica los datos pasados desde el controlador
+  const chartData = JSON.parse('{!! $data_mensual !!}');
+  
+  new Chart(ctxMovimientos, {
+    type: 'line', // Línea o 'bar'
+    data: {
+      labels: chartData.labels,
+      datasets: chartData.datasets,
     },
-    mes: {
-      // Últimos 6 meses como ejemplo; ajustar según necesites
-      labels: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'],
-      data: [75000, 82000, 90000, 87000, 94000, 98000]
-    },
-    año: {
-      // Últimos 12 meses como ejemplo; ajustar según necesites
-      labels: ['2020', '2021', '2022', '2023', '2024', '2025'],
-      data: [65000, 70000, 72000, 68000, 75000, 80000]
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
-  }
+  });
 
   // Crear selector si no existe (se inserta antes del canvas)
   let selector = document.getElementById('timeRange')

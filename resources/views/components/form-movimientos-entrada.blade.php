@@ -30,11 +30,15 @@
                     {{-- INPUT: FECHA DE ENTRADA --}}
                     <div class="col-md-6 mb-3">
                         <label for="fecha_operacion" class="form-label">Fecha y Hora de Entrada <span class="text-danger">*</span></label>
-                        <input type="datetime-local"
+                        <input 
+                            type="datetime-local"
                             class="form-control"
                             id="fecha_operacion"
                             name="fecha_operacion"
-                            required>
+                            required
+                            min="{{ \Carbon\Carbon::now()->subWeeks(2)->format('Y-m-d\TH:i') }}"
+                            max="{{ \Carbon\Carbon::now()->addWeeks(2)->format('Y-m-d\TH:i') }}"
+                        >
                     </div>
 
                     {{-- INPUT: CANTIDAD --}}

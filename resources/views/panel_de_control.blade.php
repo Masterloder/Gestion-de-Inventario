@@ -78,23 +78,27 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="{{ asset('assets/js/chart.js') }}" ></script>
-    <script>document.addEventListener("DOMContentLoaded", function () {
+   <script>document.addEventListener("DOMContentLoaded", function () {
 
-    // Opciones generales para limpiar los gráficos (sin ejes molestos)
+    // --- Configuración de Gráficas ---
+    
+    // Opciones generales de la plantilla (ajustadas para Chart.js v4+)
     var gradientChartOptionsConfiguration = {
         maintainAspectRatio: false,
-        legend: { display: false },
-        tooltips: {
-            backgroundColor: '#f5f5f5',
-            titleFontColor: '#333',
-            bodyFontColor: '#666',
-            displayColors: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                backgroundColor: '#f5f5f5',
+                titleColor: '#333',
+                bodyColor: '#666',
+                displayColors: false,
+            }
         },
         responsive: true,
         scales: {
             y: {
                 grid: { color: 'rgba(255,255,255,0.1)', borderDash: [2, 2] },
-                ticks: { color: '#9a9a9a', padding: 10 }
+                ticks: { color: '#9a9a9a', padding: 10, beginAtZero: true }
             },
             x: {
                 grid: { drawBorder: false, display: false },
@@ -103,97 +107,136 @@
         }
     };
 
-    // 1. GRÁFICO GRANDE (Performance)
-    var ctx = document.getElementById("chartBig1").getContext("2d");
-    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-    gradientStroke.addColorStop(1, 'rgba(225,78,202,0.2)'); // Rosa suave
-    gradientStroke.addColorStop(0, 'rgba(225,78,202,0)');
+    // --- Gráfica 1: Movimientos Generales (Dinámica con Filtro) ---
+    // **CORRECCIÓN DE ÁMBITO (SCOPE) HECHA CORRECTAMENTE**
+    const ctxBig1 = document.getElementById("chartBig1").getContext("2d");
+    let chartBig1Instance = null;
+    
+    // Función para obtener y dibujar los datos de Movimientos
+    function loadMovimientosChart(periodo) {
+        // Llama a la ruta que creaste en el DashboardController
+        fetch(`/dashboard/movimientos-periodo?periodo=${periodo}`)
+            .then(response => {
+                // Si la respuesta no es OK, arroja un error
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(dataMovimientos => {
+                
+                // Destruir la instancia anterior si existe
+                if (chartBig1Instance) {
+                    chartBig1Instance.destroy();
+                }
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
-            datasets: [{
-                label: "Materiales",
-                fill: true,
-                backgroundColor: gradientStroke,
-                borderColor: '#e14eca', // Rosa neón
-                borderWidth: 2,
-                borderDash: [],
-                borderDashOffset: 0.0,
-                pointBackgroundColor: '#e14eca',
-                pointBorderColor: 'rgba(255,255,255,0)',
-                pointHoverBackgroundColor: '#e14eca',
-                pointBorderWidth: 20,
-                pointHoverRadius: 4,
-                pointHoverBorderWidth: 15,
-                pointRadius: 4,
-                data: @json($chartData['performance']), // Datos de Laravel
-                tension: 0.4 // Curva suave
-            }]
-        },
-        options: gradientChartOptionsConfiguration
+                // Gradientes (deben crearse cada vez que se re-dibuja)
+                var gradientStrokeEntradas = ctxBig1.createLinearGradient(0, 230, 0, 50);
+                gradientStrokeEntradas.addColorStop(1, 'rgba(225,78,202,0.2)');
+                gradientStrokeEntradas.addColorStop(0, 'rgba(225,78,202,0)');
+                var gradientStrokeSalidas = ctxBig1.createLinearGradient(0, 230, 0, 50);
+                gradientStrokeSalidas.addColorStop(1, 'rgba(31,142,241,0.2)'); 
+                gradientStrokeSalidas.addColorStop(0, 'rgba(31,142,241,0)');
+
+                chartBig1Instance = new Chart(ctxBig1, {
+                    type: 'line',
+                    data: {
+                        labels: dataMovimientos.labels, 
+                        datasets: [
+                            {
+                                label: "Entradas",
+                                fill: true,
+                                backgroundColor: gradientStrokeEntradas,
+                                borderColor: '#e14eca',
+                                data: dataMovimientos.entradas, 
+                                tension: 0.4,
+                                pointBackgroundColor: '#e14eca',
+                            },
+                            {
+                                label: "Salidas",
+                                fill: true,
+                                backgroundColor: gradientStrokeSalidas,
+                                borderColor: '#1f8ef1',
+                                data: dataMovimientos.salidas, 
+                                tension: 0.4,
+                                pointBackgroundColor: '#1f8ef1',
+                            }
+                        ]
+                    },
+                    options: gradientChartOptionsConfiguration
+                });
+            })
+            .catch(error => console.error('Error al cargar movimientos por periodo:', error));
+    }
+
+    // Manejar el evento de clic en los botones de período
+    document.querySelectorAll('.btn-group-toggle label').forEach(label => {
+        label.addEventListener('click', function() {
+            // Se asegura de que el elemento input existe y tiene el atributo
+            const periodo = this.querySelector('input').getAttribute('data-periodo');
+            loadMovimientosChart(periodo);
+        });
     });
 
-    // 2. GRÁFICO IZQ (Shipments - Rosa)
-    var ctx2 = document.getElementById("chartLinePurple").getContext("2d");
-    new Chart(ctx2, {
-        type: 'line',
-        data: {
-            labels: ['JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
-            datasets: [{
-                label: "Shipments",
-                fill: true,
-                borderColor: '#e14eca',
-                borderWidth: 2,
-                pointRadius: 4,
-                pointBackgroundColor: '#e14eca',
-                data: @json($chartData['shipments']),
-                tension: 0.4
-            }]
-        },
-        options: gradientChartOptionsConfiguration
-    });
+    // --- Gráfica 2: Top 5 Materiales (chartBarBlue) ---
+    function loadTopMaterialesChart() {
+        // Los datos se pasan directamente desde Blade para una carga inicial estática
+        // **AJUSTE 1: Cambio de 'topMateriales' a 'top_materiales' para seguir el estándar snake_case de Blade (si se usa)**
+        const dataTopMateriales = @json($chartData['topMateriales']); // Usando camelCase como tú lo definiste.
+        const ctx3 = document.getElementById("chartBarBlue").getContext("2d");
 
-    // 3. GRÁFICO CENTRO (Ventas - Barras Azules)
-    var ctx3 = document.getElementById("chartBarBlue").getContext("2d");
-    new Chart(ctx3, {
-        type: 'bar',
-        data: {
-            labels: ['USA', 'GER', 'AUS', 'UK', 'RO', 'BR'],
-            datasets: [{
-                label: "Sales",
-                fill: true,
-                backgroundColor: '#1f8ef1', // Azul
-                borderColor: '#1f8ef1',
-                borderWidth: 2,
-                data: @json($chartData['dailySales']),
-                barPercentage: 0.4, // Ancho de las barras
-            }]
-        },
-        options: gradientChartOptionsConfiguration
-    });
+        new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: dataTopMateriales.labels, 
+                datasets: [
+                    {
+                        label: "Total Entradas",
+                        backgroundColor: '#00d6b4', 
+                        data: dataTopMateriales.entradas,
+                        barPercentage: 0.5,
+                    },
+                    {
+                        label: "Total Salidas",
+                        backgroundColor: '#e14eca', 
+                        data: dataTopMateriales.salidas,
+                        barPercentage: 0.5,
+                    }
+                ]
+            },
+            options: gradientChartOptionsConfiguration
+        });
+    }
 
-    // 4. GRÁFICO DERECHO (Tasks - Verde)
-    var ctx4 = document.getElementById("chartLineGreen").getContext("2d");
-    new Chart(ctx4, {
-        type: 'line',
-        data: {
-            labels: ['JUL', 'AGO', 'SEP', 'OCT', 'NOV'],
-            datasets: [{
-                label: "Tasks",
-                fill: true,
-                borderColor: '#00d6b4', // Verde Neón
-                borderWidth: 2,
-                pointRadius: 4,
-                pointBackgroundColor: '#00d6b4',
-                data: @json($chartData['tasks']),
-                tension: 0.4
-            }]
-        },
-        options: gradientChartOptionsConfiguration
-    });
-});</script>
+    // --- Gráfica 3: Top 5 Trabajadores (chartLineGreen -> Barras) ---
+    function loadTopTrabajadoresChart() {
+        // **AJUSTE 2: Cambio de 'topTrabajadores' a 'top_trabajadores' para seguir el estándar snake_case de Blade (si se usa)**
+        const dataTopTrabajadores = @json($chartData['topTrabajadores']); // Usando camelCase como tú lo definiste.
+        const ctx4 = document.getElementById("chartLineGreen").getContext("2d");
+
+        new Chart(ctx4, {
+            type: 'bar', 
+            data: {
+                labels: dataTopTrabajadores.labels, 
+                datasets: [
+                    {
+                        label: "Movimientos Realizados",
+                        backgroundColor: '#1f8ef1', 
+                        data: dataTopTrabajadores.data,
+                        barPercentage: 0.8,
+                    }
+                ]
+            },
+            options: gradientChartOptionsConfiguration
+        });
+    }
+
+    // --- Carga Inicial de las Gráficas ---
+    loadMovimientosChart('año'); // Carga la gráfica principal por defecto con el año
+    loadTopMaterialesChart();
+    loadTopTrabajadoresChart();
+});
+</script>
 </body>
 
 </html>
