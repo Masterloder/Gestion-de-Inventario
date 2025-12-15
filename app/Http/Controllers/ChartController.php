@@ -9,11 +9,6 @@ class ChartController extends Controller
 
     public function index(){
         
-
-
-
-
-
         return view('panel_de_control',[
 
         ])
