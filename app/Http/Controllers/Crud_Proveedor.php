@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Materiales;
+use App\Models\Movimientos;
 use App\Models\Provedores;
+use App\Models\Proveedores;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +16,7 @@ class Crud_Proveedor extends Controller
      */
     public function index()
     {
-        $post = Provedores::all()->select('id','nombre','correo','telefono','direccion');
+        $post = Proveedores::select('id','nombre','correo','telefono','direccion')->get();
         return $post;
     }
 
@@ -43,43 +46,29 @@ class Crud_Proveedor extends Controller
             ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function VistaProveedores()
     {
-        //
+        // Obtener todos los proveedores
+        $proveedores = Provedores::with(['materiales', 'materiales.movimientos'])->get();
+
+        
+        return view('proveedores.index', compact('proveedores'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function Delete(Request $request)
     {
-        //
-    }
+        $id = $request->query('id');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // Buscar el proveedor por su ID
+        $proveedor = Provedores::find($id);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        if ($proveedor) {
+            // Realizar soft delete
+            $proveedor->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            return redirect('/Proveedores')->with('success', 'Proveedor eliminado correctamente (soft delete).');
+        } else {
+            return redirect('/Proveedores')->with('error', 'Proveedor no encontrado.');
+        }
     }
 }

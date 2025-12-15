@@ -5,6 +5,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Crud_Almacen;
+use App\Http\Controllers\Crud_Configuracion;
 use App\Http\Controllers\Crud_Materiales;
 use App\Http\Controllers\Crud_Movimientos;
 use App\Http\Controllers\Crud_nventario;
@@ -24,9 +25,12 @@ Route::get('/registro', function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/configuracion', function () { return view('configuracion.index');});
+    Route::get('/configuracion',[Crud_Configuracion::class, 'index']);
 
-    Route::get('/Proveedores',function(){ return view('proveedores.index');});
+    Route::get('/Proveedores',[Crud_Proveedor::class,'VistaProveedores']);
+
+    Route::get('/Proveedores/delete',[Crud_Proveedor::class,'Delete']); 
+
     
 });
 

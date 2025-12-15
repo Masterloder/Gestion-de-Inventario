@@ -75,6 +75,7 @@
     <div class="d-flex">
 
     @include('components.siderbar_panelcontrol')
+    @include('proveedores.components.tabla-proveedores')
     
 </div>
 

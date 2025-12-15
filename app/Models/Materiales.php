@@ -18,4 +18,13 @@ class Materiales extends Model
             'categoria_especifica',
     ];
 
+    public function proveedores()
+    {
+        return $this->belongsTo(Provedores::class, 'id_proveedor');
+    }
+    public function movimientos()
+    {
+        return $this->hasMany(Movimientos::class, 'id_material');
+    }
+
 }

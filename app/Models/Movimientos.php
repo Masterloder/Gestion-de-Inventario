@@ -41,6 +41,11 @@ class Movimientos extends Model
         // Asumiendo que la clave foránea es 'id_almacen'
         return $this->belongsTo(Almacenes::class, 'id_almacen');
     }
+    public function proveedores()
+    {
+        // Asumiendo que la clave foránea es 'id_proveedor'
+        return $this->belongsTo(Provedores::class, 'id_proveedor');
+    }
 
     public function trabajador()
     {

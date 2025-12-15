@@ -73,8 +73,8 @@
 <body>
     @include('components.lateral_nav')
     <div class="d-flex">
-
-    @include('components.siderbar_panelcontrol')
+        @include('components.siderbar_panelcontrol')
+        @include('Configuracion.components.Tabla-materiales')
     
 </div>
 
