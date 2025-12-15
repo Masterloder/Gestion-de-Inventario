@@ -38,6 +38,11 @@ class AuthController extends Controller
 
     public function postLogin(Request $request): RedirectResponse
     {
+
+        $request->merge([
+            'email' => strtolower($request->input('email'))
+        ]);
+
         $request->validate([
             'email' => 'required',
             'password' => 'required',
@@ -54,8 +59,15 @@ class AuthController extends Controller
 
     public function postRegistration(Request $request): RedirectResponse
     {
+
+        // Convertir el correo electrónico a minúsculas antes de la validación
+        $request->merge([
+            'email' => strtolower($request->input('email'))
+        ]);
+
         $request->validate([
-            'name' => 'required',
+            'firsname' => 'required',
+            'lastname' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
         ]);
@@ -80,7 +92,8 @@ class AuthController extends Controller
     public function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
+            'name' => $data['firsname'],
+            'lastname' => $data['lastname'],
             'email' => $data['email'],
             'password' => Hash::make($data['password'])
         ]);

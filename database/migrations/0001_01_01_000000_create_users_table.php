@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id(); // clave primaria auto-incremental
             $table->string('name')->nullable();
-            $table->string('firsname');
+            $table->string('firstname');
             $table->string('lastname');
             $table->enum('rol', ['Administrador', 'Operador de Almacén'])->default('Operador de Almacén');
             $table->string('email')->unique();

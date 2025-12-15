@@ -30,7 +30,10 @@
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ asset('images/Usuarios/Usuario.jpg') }}" alt="Usuario" width="32" height="32" class="rounded-circle me-2" />
-                    <strong class="d-none d-sm-inline">Administrador</strong>
+                    <span class="d-none d-sm-flex flex-column align-items-start">
+                        <strong>{{ Auth::user()->name }}</strong>
+                        <small class="text-white text-lowercase">{{ strtolower(Auth::user()->rol) }}</small>
+                    </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
                     <li><a class="dropdown-item" href="{{ asset('configuracion') }}">Configuración</a></li>

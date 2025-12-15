@@ -35,11 +35,19 @@
                 </div>
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="text" id="name" name="name" required autocomplete="name">
-                        <label for="name">Nombre Completo</label>
+                        <input type="text" id="firsname" name="firsname" required >
+                        <label for="firsname">Nombre</label>
                         <span class="focus-border"></span>
                     </div>
-                    <span class="error-message" id="nameError"></span>
+                    <span class="error-message" id="firstNameError"></span>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="text" id="lastname" name="lastname" required >
+                        <label for="lastname">Apellido</label>
+                        <span class="focus-border"></span>
+                    </div>
+                    <span class="error-message" id="lastNameError"></span>
                 </div>
                 <div class="form-group">
                     <div class="input-wrapper password-wrapper">
