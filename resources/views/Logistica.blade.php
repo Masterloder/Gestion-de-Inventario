@@ -53,9 +53,28 @@
             font-size: .75rem;
         }
 
+
+        .custom-select-scroll {
+            max-height: 180px;
+            /* Altura ideal para mostrar 5 items */
+            overflow-y: auto;
+            /* Activa el scroll vertical */
+        }
+
+        /* Mejora el aspecto del scroll en navegadores modernos */
+        .custom-select-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-select-scroll::-webkit-scrollbar-thumb {
+            background-color: #dee2e6;
+            border-radius: 10px;
+        }
+
+
         /*
- * Navbar
- */
+    * Navbar
+    */
 
         .navbar-brand {
             padding-top: .75rem;
@@ -73,9 +92,14 @@
 <body>
     @include('components.lateral_nav')
     @include('components.logistica')
-    
+
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.25.0/dist/bootstrap-table.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
+
 </html>

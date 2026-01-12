@@ -16,59 +16,76 @@ class Crud_Proveedor extends Controller
      */
     public function index()
     {
-        $post = Proveedores::select('id','nombre','correo','telefono','direccion')->get();
+        $post = Proveedores::select('id', 'nombre', 'correo', 'telefono', 'direccion')->get();
         return $post;
     }
 
     public function PostProveedor(Request $request): RedirectResponse
     {
         $request->validate([
-            'nombre'=> 'required',
-            'correo'=> 'required',
-            'telefono'=> 'required',
-            'direccion'=> 'required'
+            'nombre' => 'required',
+            'correo' => 'required',
+            'telefono' => 'required',
+            'direccion' => 'required'
         ]);
-            $data = $request->all();
-            $this->create($data);
-            return redirect("/panel_de_control/Logistica")->withSuccess('');
-
+        $data = $request->all();
+        $this->create($data);
+        return redirect("/panel_de_control/Logistica")->withSuccess('');
     }
 
 
     public function create(array $data)
     {
         return Provedores::create([
-                "nombre" => $data["nombre"],
-                "correo" => $data["correo"],
-                "telefono" => $data["telefono"],
-                "direccion" => $data["direccion"]
+            "nombre" => $data["nombre"],
+            "correo" => $data["correo"],
+            "telefono" => $data["telefono"],
+            "direccion" => $data["direccion"]
 
-            ]);
+        ]);
     }
 
     public function VistaProveedores()
     {
-        // Obtener todos los proveedores
-        $proveedores = Provedores::with(['materiales', 'materiales.movimientos'])->get();
+        // Carga los proveedores con sus suministros agrupados y las relaciones de los materiales
+        $proveedores = Provedores::with('suministrosAgrupados.materiales.categoria', 'suministrosAgrupados.materiales.categoriaEspecifica')->get();
 
-        
         return view('proveedores.index', compact('proveedores'));
     }
-
-    public function Delete(Request $request)
+    public function update(Request $request, $id): RedirectResponse
     {
-        $id = $request->query('id');
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'correo' => 'required|email|max:255',
+            'telefono' => 'required|string|max:20',
+            'direccion' => 'required|string|max:255'
+        ]);
 
-        // Buscar el proveedor por su ID
         $proveedor = Provedores::find($id);
 
         if ($proveedor) {
-            // Realizar soft delete
-            $proveedor->delete();
-
-            return redirect('/Proveedores')->with('success', 'Proveedor eliminado correctamente (soft delete).');
+            $proveedor->update([
+                'nombre' => $request->input('nombre'),
+                'correo' => $request->input('correo'),
+                'telefono' => $request->input('telefono'),
+                'direccion' => $request->input('direccion')
+            ]);
+            return redirect()->to('/Proveedores')->with('success', 'Proveedor actualizado correctamente.');
         } else {
-            return redirect('/Proveedores')->with('error', 'Proveedor no encontrado.');
+            return redirect()->to('/Proveedores')->with('error', 'Proveedor no encontrado.');
         }
     }
+
+    public function Delete($id) // Recibe el $id directamente aquí
+{
+    // Buscar el proveedor por el ID recibido en la ruta
+    $proveedor = Provedores::find($id);
+
+    if ($proveedor) {
+        $proveedor->delete(); // Ejecuta el Soft Delete
+        return redirect()->to('/Proveedores')->with('success', 'Proveedor eliminado correctamente (soft delete).');
+    } else {
+        return redirect()->to('/Proveedores')->with('error', 'Proveedor no encontrado.');
+    }
+}
 }

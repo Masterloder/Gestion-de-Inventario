@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Almacenes;
+use App\Notifications\AlmacenNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,7 @@ class Crud_Almacen extends Controller
         );
         $data = $request->all();
         $this->create($data);
+        auth()->user()->notify(new AlmacenNotification('create', $data['nombre']));
         return redirect("/panel_de_control/Logistica")->withSuccess('');
     }
 
@@ -42,43 +44,4 @@ class Crud_Almacen extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

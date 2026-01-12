@@ -29,13 +29,13 @@
             @foreach ($inventario as $item)
             @php
             // Clave compuesta para JavaScript: material_id-almacen_id
-            $dataKey = "{$item->id_material}-{$item->id_almacen}";
-            $nombreMaterial = $item->material->nombre ?? 'Material Desconocido';
-            $unidadMedida = $item->material->unidad_medida ?? '';
-            $categoria = $item->material->categoria ?? '';
+            $dataKey = "{$item->id_materiales}-{$item->id_almacen}";
+            $nombreMaterial = $item->materiales->nombre ?? 'Material Desconocido';
+            $unidadMedida = $item->materiales->unidad_medida ?? '';
+            $categoria = $item->materiales->categoria ?? '';
             @endphp
             <option
-                value="{{ $item->id_material }}"
+                value="{{ $item->id_materiales }}"
                 data-almacen="{{ $item->id_almacen }}"
                 data-key="{{ $dataKey }}"
                 hidden disabled>

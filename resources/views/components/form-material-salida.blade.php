@@ -17,10 +17,11 @@
                 <option value="">Cargando material...</option>
                 {{-- Iterar sobre la colección de materiales para que JavaScript pueda hacer la selección --}}
                 @foreach ($materiales as $material)
-                <option value="{{ $material->id }}"
-                    data-nombre="{{ $material->nombre }}"
-                    data-almacen="{{ $material->id_almacen ?? '' }}">
-                    {{ $material->nombre }} (ID: {{ $material->id }})
+                {{-- Acceso como array --}}
+                <option value="{{ $material['id'] }}">
+                    {{ $material['nombre'] }}
+                    | Cat: {{ $material['categoria']['nombre_categoria'] ?? 'S/C' }}
+                    ({{ $material['unidad_medida']['simbolo'] ?? '' }})
                 </option>
                 @endforeach
             </select>
@@ -77,9 +78,9 @@
                 class="form-control"
                 id="fecha_operacion"
                 name="fecha_operacion"
-                    value="{{ $fechaHoy }}" {{-- Valor por defecto: Hoy --}}
-                    min="{{ $fechaMinima }}" {{--Límite Mínimo: Hace 7 días --}}
-                    max="{{ $fechaMaxima }}" {{--Límite Máximo: Dentro de 7 días --}}
+                value="{{ $fechaHoy }}" {{-- Valor por defecto: Hoy --}}
+                min="{{ $fechaMinima }}" {{--Límite Mínimo: Hace 7 días --}}
+                max="{{ $fechaMaxima }}" {{--Límite Máximo: Dentro de 7 días --}}
                 required>
         </div>
 
@@ -93,6 +94,7 @@
                 placeholder="Ej: Obra A, Taller de Mantenimiento, Departamento X"
                 required>
         </div>
+        
 
     </div>
 
@@ -100,6 +102,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill"></i> Registrar Salida</button>
     </div>
+
 </form>
 
 {{-- Lógica de Auto-Relleno y Campo Oculto --}}

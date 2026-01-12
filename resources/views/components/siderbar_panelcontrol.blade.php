@@ -154,11 +154,11 @@
 
            <div class="collapse" id="collapseReports">
              <ul class="nav flex-column ps-4 border-start mx-3" style="--bs-border-width: 2px;">
-               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="#"> Informes Diarios </a></li>
-               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="#"> Informes Semanales </a></li>
-               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="#"> Informes Mensuales </a></li>
-               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="#"> Informes Trimestrales </a></li>
-               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="#"> Informes Anuales </a></li>
+               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="Informes/diario"> Informes Diarios </a></li>
+               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="Informes/semanal"> Informes Semanales </a></li>
+               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="Informes/mensual"> Informes Mensuales </a></li>
+               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="Informes/trimestral"> Informes Trimestrales </a></li>
+               <li class="nav-item"><a class="nav-link text-dark py-2 ps-3" href="Informes/anual"> Informes Anuales </a></li>
              </ul>
            </div>
          </li>

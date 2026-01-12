@@ -7,8 +7,12 @@ use App\Models\Inventario;
 use App\Models\Materiales;
 use App\Models\Movimientos;
 use App\Models\Almacenes;
+use App\Models\CategoriaEspecifica;
+use App\Models\CategoriaMaterial;
 use App\Models\Provedores;
+use App\Models\UnidadMedida;
 use App\Models\User;
+use App\Notifications\inventarioNotification;
 use faker\Factory as faker;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,9 +58,10 @@ class Crud_Movimientos extends Controller
             'id_usuario'        => auth()->id()
         ]);
 
+        $material = Materiales::find($request['id_material']);
+        auth()->user()->notify(new inventarioNotification('Ingreso', $material->nombre, $request['cantidad']));
         // 2. Actualizar/Crear en el Inventario
         $this->updateOrCreateInventario($data1);
-
         return redirect("/panel_de_control/Logistica")->withSuccess("Ingreso de material registrado.");
     }
 
@@ -83,6 +88,7 @@ class Crud_Movimientos extends Controller
             return $inventario;
         }
 
+        auth()->user()->notify(new inventarioNotification('Nuevo', $material->nombre, $data1['cantidad']));
         // si no existe, crear nueva fila
         return Inventario::create([
             'id_material'     => $data1['id_material'],
@@ -135,7 +141,7 @@ class Crud_Movimientos extends Controller
             'id_material1' => 'required',
             'cantidad' => 'required'
         ]);
-        
+
         $data = $request->all();
         $referencia = $this->generateUniqueReference('Salida');
         // 1. Actualizar el Inventario (restando)
@@ -143,12 +149,12 @@ class Crud_Movimientos extends Controller
         if (!$result) {
             return redirect("/Movimientos/tabla")->withErrors("Stock insuficiente en el almacén seleccionado.");
         }
-                // 2. Registrar el movimiento de Salida
+        // 2. Registrar el movimiento de Salida
         Movimientos::create([
             'tipo_movimiento'   => 'Salida', // Correcto: Salida
             'fecha_operacion'   => $data['fecha_operacion'],
             'cantidad'          => $data['cantidad'],
-            'numero_referencia' => $referencia, 
+            'numero_referencia' => $referencia,
             'id_material'       => $data['id_material1'],
             'id_proveedor'      => null, // La salida no requiere proveedor
             'id_almacen'        => $data['id_almacen1'],
@@ -158,10 +164,10 @@ class Crud_Movimientos extends Controller
 
         return redirect("/Movimientos/tabla")->withSuccess("Salida de material registrada.");
     }
-        //salida con el material seleccionado automaticamente
-     public function MovimientoSalida2(Request $request): RedirectResponse
+    //salida con el material seleccionado automaticamente
+    public function MovimientoSalida2(Request $request): RedirectResponse
     {
-        
+
         // validar aquí que la cantidad a sacar no exceda la cantidad en inventario.
         $request->validate([
             'id_almacen1' => 'required',
@@ -176,8 +182,8 @@ class Crud_Movimientos extends Controller
         if (!$result) {
             return redirect("/Movimientos/tabla")->withErrors("Stock insuficiente en el almacén seleccionado.");
         }
-        
-                // 2. Registrar el movimiento de Salida
+
+        // 2. Registrar el movimiento de Salida
         Movimientos::create([
             'tipo_movimiento'   => 'Salida', // Correcto: Salida
             'fecha_operacion'   => $data['fecha_operacion'],
@@ -189,7 +195,7 @@ class Crud_Movimientos extends Controller
             'destino'           => null,
             'id_usuario'        => auth()->id()
         ]);
-
+        auth()->user()->notify(new inventarioNotification('Salida', '', $data['cantidad']));
         return redirect("/Movimientos/tabla")->withSuccess("Salida de material registrada.");
     }
 
@@ -243,16 +249,11 @@ class Crud_Movimientos extends Controller
     public function update(Request $request, Movimientos $movimiento)
     {
         $request->validate([
-            // 'id_material' debe existir en la tabla 'materiales'
             'id_material'       => 'required|exists:materiales,id',
-            // 'id_usuario' debe existir en la tabla 'users' (o la tabla de tus trabajadores)
-            'id_usuario'      => 'required|exists:users,id',
-            // 'cantidad' debe ser un número entero, requerido y mayor que 0
+            'id_usuario'        => 'required|exists:users,id',
             'cantidad'          => 'required|integer|min:1',
-            // 'numero_referencia' es opcional y debe ser una cadena de máximo 50 caracteres
-            'numero_referencia'     => 'nullable|string|max:50',
+            'numero_referencia' => 'nullable|string|max:50',
         ], [
-            // Mensajes de error personalizados para mejor UX
             'id_material.required' => 'Debes seleccionar un material.',
             'id_material.exists'   => 'El material seleccionado no es válido.',
             'id_usuario.required'  => 'Debes seleccionar un trabajador.',
@@ -261,76 +262,106 @@ class Crud_Movimientos extends Controller
             'cantidad.integer'     => 'La cantidad debe ser un número entero.',
             'cantidad.min'         => 'La cantidad debe ser al menos 1.',
         ]);
-        
-        // 2. Actualización del Movimiento
-        try {
-            $movimiento->update([
-                'id_material'       => $request->id_material,
-                'id_usuario'        => $request->id_usuario,
-                'cantidad'          => $request->cantidad,
-                'numero_referencia' => $request->numero_referencia,
-                // Puedes agregar otros campos aquí si son necesarios
-            ]);
-            
-            // 3.Redirección con Mensaje de Éxito
-            return redirect()->route('movimientos.index') // O la ruta que uses para la tabla principal
-                             ->with('success', 'El movimiento se ha actualizado correctamente.');
 
-        } catch (\Exception $e) {
-            
-            return back() // Vuelve al formulario
-                ->withInput() // Mantiene los datos que el usuario ingresó
-                ->with('error', 'Ocurrió un error al intentar actualizar el movimiento. Por favor, inténtalo de nuevo.');
+        try {
+            // Buscar inventario actual del material y almacén
+            $inventario = Inventario::where('id_material', $request['id_material'])
+                ->where('id_almacen', $movimiento->id_almacen)
+                ->first();
+
+            $cantidadAnterior = $movimiento->cantidad;
+            $cantidadNueva = $request['cantidad'];
+            $diferencia = $cantidadNueva - $cantidadAnterior;
+
+            // Si la cantidad nueva es mayor, restar la diferencia del inventario (sin pasar de lo disponible)
+            if ($diferencia > 0) {
+                if ($inventario && $inventario->cantidad_actual < $diferencia) {
+                    return back()->withInput()->with('error', 'No puedes retirar más material del disponible en inventario.');
+                }
+                if ($inventario) {
+                    $inventario->cantidad_actual -= $diferencia;
+                    if ($inventario->cantidad_actual < 0) {
+                        $inventario->cantidad_actual = 0;
+                    }
+                    $inventario->save();
+                }
+            }
+            // Si la cantidad nueva es menor, sumar la diferencia al inventario
+            elseif ($diferencia < 0) {
+                if ($inventario) {
+                    $inventario->cantidad_actual += abs($diferencia);
+                    $inventario->save();
+                }
+            }
+            // Si la cantidad es igual, no hacer nada en inventario
+
+            $movimiento->update([
+                'id_material'       => $request['id_material'],
+                'id_usuario'        => $request['id_usuario'],
+                'cantidad'          => $request['cantidad'],
+                'numero_referencia' => $request['numero_referencia'],
+            ]);
+            auth()->user()->notify(new inventarioNotification('Actualización', '', $request['cantidad']));
+            return redirect()->to('/Movimientos/tabla')
+                ->with('success', 'El movimiento se ha actualizado correctamente.');
+        } catch (\Exception $ex) {
+            return back()->withInput()->with('error', 'Ocurrió un error al intentar actualizar el movimiento. Por favor, inténtalo de nuevo.');
         }
     }
-    
 
 
-    public function destroy(Movimientos $movimiento)
+
+    public function destroy($id)
     {
+        // Buscar el movimiento por ID
+        $movimiento = Movimientos::findOrFail($id);
+
         // Soft delete: establece la columna 'deleted_at'
         $movimiento->delete();
-
-        return redirect()->route('/Movimientos/tabla')->with('success', 'Movimiento eliminado (Soft Delete) correctamente.');
+        auth()->user()->notify(new inventarioNotification('Eliminación', '', $movimiento->cantidad));
+        return redirect()->to('/Movimientos/tabla')->with('success', 'Movimiento eliminado (Soft Delete) correctamente.');
     }
 
 
 
     public function Movimientos()
     {
-        //Carga Anticipada (Eager Loading) de las 4 relaciones
+        // 1. Paginación y Carga Anticipada (Eager Loading)
+        // Usamos paginate para no cargar miles de registros de golpe
         $movimientos = Movimientos::with([
             'tipoMovimiento',
             'materiales',
             'almacenes',
             'trabajador',
             'destino'
-        ])->orderBy('fecha_operacion', 'desc')->get(); // Ordenar por fecha
+        ])
+            ->orderBy('fecha_operacion', 'desc')
+            ->paginate(15);
 
-        // Datos para el formulario (modal)
-        $almacenes = Almacenes::all(['id', 'nombre', 'direccion']);
-        $proveedores = Provedores::all(['id', 'nombre', 'correo', 'telefono']);
-        $materiales = Materiales::all(['id', 'nombre', 'unidad_medida', 'categoria', 'categoria_especifica']);
-        $trabajadores = User::all(['id', 'name']);
+        // 2. Datos para selects (Traemos solo ID y Nombre para ligereza)
+        $almacenes = Almacenes::select('id', 'nombre', 'direccion')->get();
+        $proveedores = Provedores::select('id', 'nombre', 'correo', 'telefono')->get();
+        $materiales = Materiales::with(['categoria', 'categoriaEspecifica', 'unidadMedida'])
+            ->select('id', 'nombre', 'unidad_medida_id', 'categoria_id', 'categoria_especifica_id')
+            ->get();
+        $trabajadores = User::select('id', 'name')->get();
 
-        //Obtener el inventario completo, con Eager Loading, que es la fuente de verdad.
-        // Solo incluimos items con cantidad_actual > 0
-        $inventario = Inventario::with(['material', 'almacen'])
+        // 3. Inventario y Mapa (Fuente de verdad para validaciones en el frontend)
+        $inventario = Inventario::with(['material:id,unidad_medida_id', 'almacen:id,nombre'])
             ->where('cantidad_actual', '>', 0)
             ->get();
 
         $mapaInventario = $inventario->mapWithKeys(function ($item) {
-            // La clave única es la combinación del material y el almacén
-            $key = "{$item->id_material}-{$item->id_almacen}";
-
-            return [$key => [
+            return ["{$item->id_material}-{$item->id_almacen}" => [
                 'cantidad_actual' => $item->cantidad_actual,
-                'unidad_medida'   => $item->material->unidad_medida ?? '',
+                'unidad_medida'   => $item->material->unidad_medida ?? 'N/A',
             ]];
         });
 
-        // Pasamos la colección optimizada a la vista.
-        return view('/Movimientos', compact(
+
+            
+        // 4. Retorno a la vista
+        return view('Movimientos', compact(
             'movimientos',
             'mapaInventario',
             'almacenes',

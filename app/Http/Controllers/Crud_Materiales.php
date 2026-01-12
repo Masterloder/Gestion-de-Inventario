@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Provedores;
 use App\Models\Materiales;
+use App\Notifications\MaterialNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -28,12 +29,13 @@ class Crud_Materiales extends Controller
             'nombre' => 'required',
             'descripcion' => 'required',
             'unidad_medida' => 'required',
-            'categoria' => 'required',
-            'categoria_especifica'=> 'required'
+            'categoria_id' => 'required',
+            'categoria_especifica_id' => 'required'
         ]);
         $data = $request->all();
-        $this->create($data);
-        return redirect("/panel_de_control/Logistica")->withSuccess('');
+        $material = $this->create($data);
+        auth()->user()->notify(new MaterialNotification('create', $material->nombre));
+        return redirect()->back()->with('success', 'Material creado exitosamente.');
 
     /**
      * Almacena un recurso recién creado en el almacenamiento.
@@ -44,9 +46,9 @@ class Crud_Materiales extends Controller
         return Materiales::create([
             'nombre' => $data['nombre'],
             'descripcion' => $data['descripcion'],
-            'unidad_medida' =>$data['unidad_medida'],
-            'categoria' => $data['categoria'],
-            'categoria_especifica'=> $data['categoria_especifica']
+            'unidad_medida_id' =>$data['unidad_medida'],
+            'categoria_id' => $data['categoria_id'],
+            'categoria_especifica_id'=> $data['categoria_especifica_id']
         ]);
 
     }

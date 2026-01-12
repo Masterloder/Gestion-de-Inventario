@@ -32,6 +32,11 @@ class Movimientos extends Model
         // Asumiendo que la clave foránea es 'id_material'
         return $this->belongsTo(Materiales::class, 'id_material');
     }
+    public function material()
+    {
+        // Asumiendo que la clave foránea es 'id_material'
+        return $this->belongsTo(Materiales::class, 'id_material');
+    }
     public function tipoMovimiento()
     {
         return $this->belongsTo(Movimientos::class, 'tipo_movimiento');
@@ -56,5 +61,19 @@ class Movimientos extends Model
     public function Destino()
     {
         return $this->belongsTo(Movimientos::class,'destino');
+    }
+
+    public function movimientos() {
+        return $this->hasMany(Movimientos::class, 'id_proveedor');
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(CategoriaMaterial::class, 'categoria_id');
+    }
+
+    public function categoriaEspecifica()
+    {
+        return $this->belongsTo(CategoriaEspecifica::class, 'categoria_especifica_id');
     }
 }

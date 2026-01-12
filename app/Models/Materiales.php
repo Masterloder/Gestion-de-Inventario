@@ -4,19 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Materiales extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $table = 'materiales';
 
-     protected $fillable = [
-            'nombre',
-            'descripcion',
-            'unidad_medida',
-            'categoria',
-            'categoria_especifica',
+    protected $fillable = [
+        'nombre',
+        'descripcion',
+        'unidad_medida_id',
+        'categoria_id',
+        'categoria_especifica_id',
     ];
+    
 
     public function proveedores()
     {
@@ -26,5 +29,19 @@ class Materiales extends Model
     {
         return $this->hasMany(Movimientos::class, 'id_material');
     }
+    
+    public function categoria()
+    {
+        return $this->belongsTo(CategoriaMaterial::class, 'categoria_id');
+    }
 
+    public function categoriaEspecifica()
+    {
+        return $this->belongsTo(CategoriaEspecifica::class, 'categoria_especifica_id');
+    }
+
+    public function unidadMedida()
+    {
+        return $this->belongsTo(UnidadMedida::class, 'unidad_medida_id');
+    }
 }

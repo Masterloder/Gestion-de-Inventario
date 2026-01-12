@@ -69,7 +69,15 @@ class AuthController extends Controller
             'firsname' => 'required',
             'lastname' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:16',
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,16}$/'
+            ],
+        ], [
+            'password.regex' => 'La contraseña debe tener al menos una letra mayúscula, un número, un carácter especial y entre 8 y 16 caracteres.'
         ]);
 
         $data = $request->all();

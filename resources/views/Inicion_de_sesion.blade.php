@@ -40,7 +40,7 @@
 
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <input type="email" id="email" name="email" required autocomplete="email">
+                        <input type="email" id="email" name="email" required autocomplete="email" maxlength="70"  >
                         <label for="email">Dirección de Correo Electrónico</label>
                         <span class="focus-border"></span>
                     </div>
@@ -49,7 +49,7 @@
 
                 <div class="form-group">
                     <div class="input-wrapper password-wrapper">
-                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <input type="password" id="password" name="password" required autocomplete="current-password" maxlength="30" >
                         <label for="password">Contraseña</label>
                         <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
                             <span class="eye-icon"></span>

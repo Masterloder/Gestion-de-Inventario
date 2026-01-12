@@ -57,7 +57,7 @@
 
 
 
-         <div class="modal fade" id="modalRegistrarSalida" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalRegistrarSalidaLabel" aria-hidden="true">
+         <div class="modal fade" id="modalRegistrarSalida" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="modalRegistrarSalidaLabel" >
            <div class="modal-dialog modal-dialog-centered">
              <div class="modal-content">
                <div class="modal-header bg-primary text-white">
@@ -98,8 +98,6 @@
                <td>{{ $item->almacen->nombre ?? 'N/A' }}</td>
                <td>{{ $item->almacen->direccion ?? 'N/A' }}</td>
                <td>
-                 {{-- Usar botones con clases de Bootstrap para mejor estilo y feedback --}}
-
                  {{-- ... Otros botones (Nuevo Material, Almacén, Proveedor) ... --}}
 
                  {{-- Botón para abrir el nuevo modal de salida --}}
@@ -113,7 +111,72 @@
                    title="Registrar Salida">
                    <i class="bi bi-truck"></i>
                  </button>
-                 <button class="btn btn-sm btn-warning" title="Editar"><i class="bi bi-pencil"></i></button>
+                <!-- Botón para abrir el modal de edición de salida -->
+                <button type="button"
+                  class="btn btn-sm btn-warning"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEditarSalida{{ $item->id }}"
+                  data-inventario-id="{{ $item->id }}"
+                  title="Editar">
+                    <i class="bi bi-pencil"></i>
+                </button>
+
+                <!-- Modal para editar la salida -->
+                <div class="modal fade" id="modalEditarSalida{{ $item->id }}" tabindex="-1" aria-labelledby="modalEditarSalidaLabel{{ $item->id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header bg-primary text-white">
+                  <h5 class="modal-title" id="modalEditarSalidaLabel{{ $item->id }}">Editar Salida de Material</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form action="{{ route('salidas.update', $item->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label class="form-label">Material</label>
+                    <input type="text" class="form-control" value="{{ $item->material->nombre ?? 'N/A' }}" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" class="form-control" value="{{ $item->material->descripcion ?? 'N/A' }}" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Unidad de Medida</label>
+                    <input type="text" class="form-control" value="{{ $item->material->unidadMedida->simbolo ?? '' }}" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Cantidad Actual</label>
+                    <input type="number" class="form-control" name="cantidad_actual" value="{{ $item->cantidad_actual }}" min="0" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Almacén</label>
+                    <select class="form-select" name="id_almacen" required>
+                      @foreach($almacenes as $almacen)
+                        <option value="{{ $almacen->id }}" {{ $item->id_almacen == $almacen->id ? 'selected' : '' }}>
+                          {{ $almacen->nombre }}
+                        </option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Ubicación Física (opcional)</label>
+                    <input type="text" class="form-control" name="ubicacion_fisica" value="{{ $item->almacen->direccion ?? '' }}">
+                  </div>
+                  <div class="alert alert-warning mt-3" role="alert">
+                    <strong>Advertencia:</strong> Si acepta, los cambios se guardarán permanentemente y no podrán ser restaurados.
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary"
+                    onclick="return confirm('¿Está seguro de que desea realizar estos cambios? Esta acción es irreversible.');">
+                    Guardar Cambios
+                  </button>
+                </div></form>
+                    </div>
+                  </div>
+                </div>
                  <button type="button"
                                      class="btn btn-sm btn-danger"
                                      title="Eliminar inventario"
@@ -123,14 +186,14 @@
                                  </button>
 
                  <div class="modal fade" id="eliminarModal{{ $item->id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ $item->id}}" aria-hidden="true">
-                   <div class="modal-dialog">
+                   <div class="modal-dialog modal-dialog-centered">
                      <div class="modal-content">
                        <div class="modal-header bg-danger text-white">
                          <h5 class="modal-title" id="eliminarModalLabel{{ $item->id }}">Confirmar Eliminación</h5>
                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                        </div>
                        <div class="modal-body">
-                         <p>¿Estás seguro que deseas eliminar (Soft Delete) el inventario **#{{ $item->id }}**?</p>
+                         <p>¿Estás seguro que deseas eliminar el inventario **#{{ $item->id }}**?</p>
                          <p class="text-danger">Esta acción registrará la baja, pero mantendrá el registro.</p>
                        </div>
                        <form action="{{ route('inventarios.destroy', $item->id) }}" method="POST">

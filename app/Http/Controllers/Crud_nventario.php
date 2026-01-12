@@ -3,13 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Almacenes;
+use App\Models\CategoriaEspecifica;
+use App\Models\CategoriaMaterial;
 use App\Models\Inventario;
 use App\Models\Provedores;
 use App\Models\Materiales;
+use App\Models\UnidadMedida;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
+use App\Models\Salida;
+use App\Models\MaterialAlmacen;
+use App\Notifications\inventarioNotification;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Crud_nventario extends Controller
 {
@@ -37,10 +45,12 @@ class Crud_nventario extends Controller
         ]);
         $data = $request->all();
         $this->create($data);
-        return redirect("/panel_de_control/Logistica")->withSuccess('');
+        $material = Materiales::find($data['id_material']);
+        auth()->user()->notify(new inventarioNotification('Ingreso', Materiales::find($material->nombre_material, $data['cantidad_actual'], auth()->user()->name)));
+        return redirect()->back()->with('success', 'El material ha sido agregado al inventario correctamente.');
 
         /**
-         * Almacena un recurso recién creado en el almacenamiento.
+         * Almacena un recurso  creado en el almacenamiento.
          */
     }
     public function create(array $data)
@@ -58,9 +68,23 @@ class Crud_nventario extends Controller
     {
 
         $almacenes = Almacenes::all(['id', 'nombre', 'direccion']);
-        $materiales = Materiales::all(['id', 'nombre', 'descripcion', 'unidad_medida', 'categoria', 'categoria_especifica']);
+
+
+        // Realizamos la consulta con todas las relaciones necesarias
+        $materialesArray = Materiales::with([
+            'unidadMedida:id,nombre_unidad,simbolo',
+            'categoria:id,nombre_categoria',
+            'categoriaEspecifica:id,nombre_especifico'
+        ])
+            ->get()
+            ->toArray(); // Convierte la colección y sus relaciones en un solo array
+
+        $materiales = collect($materialesArray);
+
+        $unidades = UnidadMedida::all(['id', 'nombre_unidad', 'simbolo']);
+        $categorias = CategoriaMaterial::with('categoriasEspecificas')->get();
         $trabajadores = User::all(['id', 'name']);
-        
+
         $inventario = Inventario::with('material')->get();
 
         //Obtener el inventario completo, con Eager Loading, que es la fuente de verdad.
@@ -73,30 +97,51 @@ class Crud_nventario extends Controller
                 'unidad_medida' => $item->material->unidad_medida ?? '',
             ]];
         });
-
         return view('/logistica', [
             'inventario' => $inventario,
             'almacenes' => $almacenes,
             'mapaInventario' => $mapaInventario,
             'materiales' => $materiales,
             'trabajadores' => $trabajadores,
+            'unidades' => $unidades,
+            'categorias' => $categorias,
         ]);
     }
 
-    public function destroy(Inventario $inventario)
-    {
-        // 1. Ejecutar el Soft Delete
-        try {
-            // El método delete() marcará el campo 'deleted_at'
-            $inventario->delete();
-            // 2. Redirección con Mensaje de Éxito
-            return redirect()->route('/panel_de_control/Logistica') // Redirige a la lista principal de inventario
-                             ->with('warning', 'El registro de Inventario #' . $inventario->id . ' ha sido marcado como baja (Soft Delete).');
+    public function destroy($id) // Recibimos el ID de la ruta
+{
+    try {
+        // 1. Buscamos el registro
+        $inventario = Inventario::findOrFail($id);
 
-        } catch (\Exception $e) {
+        // 2. Ejecutamos el delete (Laravel detectará automáticamente el SoftDelete si el modelo lo tiene)
+        $inventario->delete();
 
-            return back() // Vuelve a la página anterior
-                ->with('error', 'Ocurrió un error al intentar eliminar el registro de inventario. Por favor, inténtalo de nuevo.');
-        }
+        // 3. Redirección usando el NOMBRE de la ruta (logistica.index)
+        return redirect()->route('logistica.index')
+            ->with('warning', 'El registro #' . $id . ' ha sido marcado como baja.');
+
+    } catch (\Exception $e) {
+        return back()->with('error', 'No se pudo eliminar: ' . $e->getMessage());
     }
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'cantidad_actual' => 'required|numeric|min:0',
+        'id_almacen' => 'required|exists:almacenes,id',
+        'ubicacion_fisica' => 'nullable|string|max:255',
+    ]);
+
+    $inventario = Inventario::findOrFail($id);
+
+    $inventario->cantidad_actual = $request->input('cantidad_actual');
+    $inventario->id_almacen = $request->input('id_almacen');
+    $inventario->ubicacion_fisica = $request->input('ubicacion_fisica');
+    $inventario->save();
+
+    return redirect()->to('/panel_de_control/Logistica')
+        ->with('success', 'El registro de inventario ha sido actualizado correctamente.');
+}
 }

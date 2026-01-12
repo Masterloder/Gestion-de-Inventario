@@ -17,9 +17,9 @@ class ProvedoresSeeder extends Seeder
     public function run(): void
     {
         $Post = new Provedores();
-        $Post->codigo = \Faker\Factory::create()->unique()->numberBetween(1000, 9999);
         $Post->nombre = \Faker\Factory::create()->name();
-        $Post->contacto = \Faker\Factory::create()->unique()->safeEmail();
+        $Post->correo = \Faker\Factory::create()->unique()->safeEmail();
+        $Post->telefono = \Faker\Factory::create()->phoneNumber();
         $Post->direccion = \Faker\Factory::create()->address();
         $Post->save();
     }

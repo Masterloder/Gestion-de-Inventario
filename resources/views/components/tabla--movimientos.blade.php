@@ -42,7 +42,7 @@
                      </div>
                  </div>
 
-                 <table data-toggle="table" class="table table-responsive table-striped" data-search="true" data-sort-stable="true" data-pagination="true" id="tabla-movimientos">
+                 <table data-toggle="table" class="table table-responsive table-striped table-hover " data-search="true" data-sort-stable="true" data-pagination="true" id="tabla-movimientos">
                      <thead>
                          <tr>
                              <th data-sortable="true">Tipo de Movimiento</th>
@@ -59,7 +59,9 @@
                          @if ($movimientos->isEmpty())
                          <tr>
                              {{-- Colspan debe ser 8 para abarcar todas las columnas --}}
-                             <td colspan="8" class="text-center">No hay movimientos registrados.</td>
+                             <td colspan="8" class="text-center py-4">
+                                <i class="bi bi-info-circle"></i> No hay movimientos registrados.
+                            </td>
                          </tr>
                          @else
                          @foreach ($movimientos as $movimiento)
@@ -112,8 +114,9 @@
                                  </button>
                              </td>
                          </tr>
-                         <div class="modal fade" id="detalleModal{{ $movimiento->id }}" tabindex="-1" aria-labelledby="detalleModalLabel{{ $movimiento->id }}" aria-hidden="true">
-                             <div class="modal-dialog">
+                         {{-- Modal Detalle --}}
+                         <div class="modal fade" id="detalleModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"   aria-labelledby="detalleModalLabel{{ $movimiento->id }}" aria-hidden="true">
+                             <div class="modal-dialog modal-dialog-centered ">
                                  <div class="modal-content">
                                      <div class="modal-header">
                                          <h5 class="modal-title" id="detalleModalLabel{{ $movimiento->id }}">Detalles del Movimiento #{{ $movimiento->id }}</h5>
@@ -141,84 +144,118 @@
                                  </div>
                              </div>
                          </div>
-                         <div class="modal fade" id="editarModal{{ $movimiento->id }}" tabindex="-1" aria-labelledby="editarModalLabel{{ $movimiento->id }}" aria-hidden="true">
-                             <div class="modal-dialog modal-lg">
-                                 <div class="modal-content">
-                                     <div class="modal-header">
-                                         <h5 class="modal-title" id="editarModalLabel{{ $movimiento->id }}">Editar Movimiento #{{ $movimiento->id }}</h5>
-                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                     </div>
-                                     <form action="{{ route('movimientos.update', $movimiento->id) }}" method="POST">
-                                         @csrf
-                                         @method('PUT')
-                                         <div class="modal-body row">
+                            {{-- Modal Editar --}}
+                        <div class="modal fade" id="editarModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"  aria-labelledby="editarModalLabel{{ $movimiento->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editarModalLabel{{ $movimiento->id }}">Editar Movimiento #{{ $movimiento->id }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form action="{{ route('movimientos.update', $movimiento->id) }}" method="POST" onsubmit="return confirmarEdicion({{ $movimiento->id }}, {{ $movimiento->cantidad }}, {{ $movimiento->materiales->stock ?? 0 }})">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="modal-body row">
 
-                                             <div class="mb-3 col-md-6">
-                                                 <label for="id_material_{{ $movimiento->id }}" class="form-label">Material</label>
-                                                 <select name="id_material" id="id_material_{{ $movimiento->id }}" class="form-select" required>
-                                                     <option value="">-- Selecciona Material --</option>
-                                                     @foreach ($materiales as $material)
-                                                     <option
-                                                         value="{{ $material->id }}"
-                                                         {{ $movimiento->id_material == $material->id ? 'selected' : '' }}>
-                                                         {{ $material->nombre }} ({{ $material->unidad_medida }})
-                                                     </option>
-                                                     @endforeach
-                                                 </select>
-                                             </div>
+                                            <div class="mb-3 col-md-6">
+                                                <label for="id_material_{{ $movimiento->id }}" class="form-label">Material</label>
+                                                <input type="text"
+                                                    id="id_material_{{ $movimiento->id }}"
+                                                    class="form-control"
+                                                    value="{{ $movimiento->materiales->nombre ?? 'N/A' }}{{ !empty($movimiento->materiales->unidadMedida->simbolo) ? ' (' . $movimiento->materiales->unidadMedida->simbolo . ')' : '' }}{{ !empty($movimiento->materiales->categoria->nombre_categoria) ? ' - ' . $movimiento->materiales->categoria->nombre_categoria : '' }}"
+                                                    readonly>
+                                                <input type="hidden" name="id_material" value="{{ $movimiento->id_material }}">
+                                            </div>
 
-                                             <div class="mb-3 col-md-6">
-                                                 <label for="id_trabajador_{{ $movimiento->id }}" class="form-label">Trabajador</label>
-                                                 <select name="id_usuario" id="id_trabajador_{{ $movimiento->id }}" class="form-select" required>
-                                                     <option value="">-- Selecciona Trabajador --</option>
-                                                     @foreach ($trabajadores as $trabajador)
-                                                     <option
-                                                         value="{{ $trabajador->id }}"
-                                                         {{ $movimiento->id_usuario == $trabajador->id ? 'selected' : '' }}>
-                                                         {{ $trabajador->name }}
-                                                     </option>
-                                                     @endforeach
-                                                 </select>
-                                             </div>
+                                            <div class="mb-3 col-md-6">
+                                                <label for="id_trabajador_{{ $movimiento->id }}" class="form-label">Trabajador</label>
+                                                <select name="id_usuario" id="id_trabajador_{{ $movimiento->id }}" class="form-select" required>
+                                                    <option value="">-- Selecciona Trabajador --</option>
+                                                    @foreach ($trabajadores as $trabajador)
+                                                    <option
+                                                        value="{{ $trabajador->id }}"
+                                                        {{ $movimiento->id_usuario == $trabajador->id ? 'selected' : '' }}>
+                                                        {{ $trabajador->name }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                             <div class="mb-3 col-md-6">
-                                                 <label for="cantidad_{{ $movimiento->id }}" class="form-label">Cantidad</label>
-                                                 <input type="number"
-                                                     name="cantidad"
-                                                     id="cantidad_{{ $movimiento->id }}"
-                                                     class="form-control"
-                                                     value="{{ $movimiento->cantidad }}"
-                                                     required>
-                                             </div>
+                                            <div class="mb-3 col-md-6">
+                                                <label for="cantidad_{{ $movimiento->id }}" class="form-label">Cantidad</label>
+                                                <input type="number"
+                                                    name="cantidad"
+                                                    id="cantidad_{{ $movimiento->id }}"
+                                                    class="form-control"
+                                                    value="{{ $movimiento->cantidad }}"
+                                                    required min="1">
+                                            </div>
+                                            <div class="mb-3 col-md-6">
+                                                <label for="numero_referencia_{{ $movimiento->id }}" class="form-label">Nº de Referencia</label>
+                                                <input type="text"
+                                                    name="numero_referencia"
+                                                    id="numero_referencia_{{ $movimiento->id }}"
+                                                    class="form-control"
+                                                    value="{{ $movimiento->numero_referencia }}"
+                                                    required>
+                                            <div class="mb-3 col-md-6">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                                        </div>
+                                    </form>
+                                    <script>
+                                    function confirmarEdicion(id, cantidadAnterior, stockDisponible) {
+                                        if (!validarCantidad(id, cantidadAnterior, stockDisponible)) {
+                                            return false;
+                                        }
+                                        return confirm('¿Está seguro de realizar esta acción?\nEl cambio será permanente y no podrá ser recuperado.');
+                                    }
+                                    </script>
+                                    <script>
+                                    function validarCantidad(id, cantidadAnterior, stockDisponible) {
+                                        var inputCantidad = document.getElementById('cantidad_' + id);
+                                        var nuevaCantidad = parseInt(inputCantidad.value);
+                                        var tipoMovimiento = '{{ $movimiento->tipo_movimiento }}';
 
-                                             <div class="mb-3 col-md-6">
-                                                 <label for="referencia_{{ $movimiento->id }}" class="form-label">Nº de Referencia</label>
-                                                 <input type="text"
-                                                     name="numero_referencia"
-                                                     id="referencia_{{ $movimiento->id }}"
-                                                     class="form-control"
-                                                     value="{{ $movimiento->numero_referencia }}">
-                                             </div>
+                                        if (isNaN(nuevaCantidad) || nuevaCantidad < 1) {
+                                            alert('La cantidad debe ser mayor a 0.');
+                                            return false;
+                                        }
 
-                                         </div>
-                                         <div class="modal-footer">
-                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                             <button type="submit" class="btn btn-warning">Guardar Cambios</button>
-                                         </div>
-                                     </form>
+                                        var diferencia = nuevaCantidad - cantidadAnterior;
+
+                                        if (tipoMovimiento === 'Salida') {
+                                            // Si la nueva cantidad es mayor, se está intentando sacar más material
+                                            if (diferencia > 0) {
+                                                if (diferencia > stockDisponible) {
+                                                    alert('No puedes retirar más material del disponible en inventario.');
+                                                    return false;
+                                                }
+                                            }
+                                        }
+                                        // Para ingreso, no hay restricción de stock, pero podrías agregar validaciones si lo deseas
+
+                                        // El cálculo de suma/resta al stock se debe hacer en el backend al actualizar el movimiento
+                                        return true;
+                                    }
+                                    </script>
                                  </div>
                              </div>
                          </div>
-                         <div class="modal fade" id="eliminarModal{{ $movimiento->id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ $movimiento->id }}" aria-hidden="true">
-                             <div class="modal-dialog">
+                            {{-- Modal Eliminar --}}
+                         <div class="modal fade" id="eliminarModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"   aria-labelledby="eliminarModalLabel{{ $movimiento->id }}" aria-hidden="true">
+                             <div class="modal-dialog modal-dialog-centered">
                                  <div class="modal-content">
                                      <div class="modal-header bg-danger text-white">
                                          <h5 class="modal-title" id="eliminarModalLabel{{ $movimiento->id }}">Confirmar Eliminación</h5>
                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                      </div>
                                      <div class="modal-body">
-                                         <p>¿Estás seguro que deseas eliminar (Soft Delete) el Movimiento **#{{ $movimiento->id }}**?</p>
-                                         <p class="text-danger">Esta acción registrará la baja, pero mantendrá el registro.</p>
+                                         <p>¿Estás seguro que deseas eliminar el Movimiento **#{{ $movimiento->id }}**?</p>
+                                         <p class="text-danger">Esta acción registrará la baja, pero no efectuara ningun cambio en el inventario.</p>
                                      </div>
                                      <form action="{{ route('movimientos.destroy', $movimiento->id) }}" method="POST">
                                          @csrf
