@@ -43,7 +43,7 @@
                     [
                         'title' => 'Respaldos y Restauración',
                         'desc'  => 'Administra datos de respaldo y restauración del sistema.',
-                        'link'  => '#',
+                        'link'  => '/backup/database',
                         'icon'  => 'bi-save'
                     ],
                 ];

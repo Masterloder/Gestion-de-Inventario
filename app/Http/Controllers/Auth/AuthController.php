@@ -59,33 +59,41 @@ class AuthController extends Controller
 
     public function postRegistration(Request $request): RedirectResponse
     {
-
-        // Convertir el correo electrónico a minúsculas antes de la validación
+        // 1. Convertir email a minúsculas
         $request->merge([
             'email' => strtolower($request->input('email'))
         ]);
 
+        
+
+        // 3. Validación
         $request->validate([
-            'firsname' => 'required',
-            'lastname' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => [
+            'firstname' => 'required|string|max:30',
+            'lastname'  => 'required|string|max:30',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => [
                 'required',
                 'string',
                 'min:8',
-                'max:16',
-                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,16}$/'
+                'max:14',
+                'confirmed', // Esto verifica automáticamente con password_confirmation
+                'regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]).{8,14}$/'
             ],
         ], [
-            'password.regex' => 'La contraseña debe tener al menos una letra mayúscula, un número, un carácter especial y entre 8 y 16 caracteres.'
+            // Mensajes personalizados para el modal o spans
+            'password.regex' => 'La contraseña debe tener una mayúscula, un número, un carácter especial y entre 8 y 14 caracteres.',
+            'email.unique'   => 'Este correo ya está registrado.',
+            'password.confirmed' => 'Las contraseñas no coinciden.'
         ]);
 
+        // 4. Creación de usuario
         $data = $request->all();
         $user = $this->create($data);
 
         Auth::login($user);
 
-        return redirect("dashboard")->withSuccess('Genial! Has iniciado sesión correctamente');
+        // 5. Redirección final
+        return redirect("dashboard")->with('success', '¡Genial! Has iniciado sesión correctamente');
     }
 
     public function dashboard()
@@ -100,7 +108,7 @@ class AuthController extends Controller
     public function create(array $data)
     {
         return User::create([
-            'name' => $data['firsname'],
+            'name' => $data['firstname'],
             'lastname' => $data['lastname'],
             'email' => $data['email'],
             'password' => Hash::make($data['password'])

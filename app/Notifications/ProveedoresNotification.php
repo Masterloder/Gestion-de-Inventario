@@ -11,44 +11,52 @@ class ProveedoresNotification extends Notification
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
+    protected $tipo;
+    protected $proveedor;
+    protected $user;
+
+    public function __construct($tipo, $proveedor)
     {
-        //
+        $this->tipo = $tipo;
+        $this->proveedor = $proveedor;
+        $this->user = auth()->user()->name ;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(object $notifiable): array
     {
-        return [
-            //
-        ];
+        $config = match($this->tipo) {
+            'create' => [
+                'titulo' => 'Nuevo Proveedor',
+                'mensaje' => "Se ha registrado el Provedor: {$this->proveedor} por el usuario: {$this->user}",
+                'icono' => 'bi-plus-circle',
+                'color' => 'text-success'
+            ],
+            'update' => [
+                'titulo' => 'Almacén Actualizado',
+                'mensaje' => "Cambios Efectuados en: {$this->proveedor} realizados por el usuario: {$this->user}",
+                'icono' => 'bi-pencil-square',
+                'color' => 'text-primary'
+            ],
+            'delete' => [
+                'titulo' => 'Almacén Eliminado',
+                'mensaje' => "El Almacén: {$this->proveedor} ha sido eliminado por el usuario: {$this->user}.",
+                'icono' => 'bi-trash',
+                'color' => 'text-danger'
+            ],
+            default => [
+                'titulo' => 'Notificación del Sistema',
+                'mensaje' => 'Acción realizada.',
+                'icono' => 'bi-info-circle',
+                'color' => 'text-secondary'
+            ]
+        };
+
+        return $config;
     }
+
 }

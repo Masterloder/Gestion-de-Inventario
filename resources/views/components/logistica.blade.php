@@ -16,7 +16,7 @@
            </div>
          </div>
          <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-           <div class="modal-dialog modal-dialog-centered">
+           <div class="modal-dialog  modal-dialog-centered ">
              <div class="modal-content">
                <div class="modal-header">
                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Registro de Material</h1>
@@ -58,7 +58,7 @@
 
 
          <div class="modal fade" id="modalRegistrarSalida" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="modalRegistrarSalidaLabel" >
-           <div class="modal-dialog modal-dialog-centered">
+           <div class="modal-dialog modal-dialog-centered modal-xl">
              <div class="modal-content">
                <div class="modal-header bg-primary text-white">
                  <h5 class="modal-title" id="modalRegistrarSalidaLabel">Registrar Salida de Material</h5>

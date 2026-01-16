@@ -12,6 +12,7 @@ use App\Http\Controllers\Crud_nventario;
 use App\Http\Controllers\Crud_Proveedor;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InformesController;
+use App\Http\Controllers\RespaldoController;
 use App\View\Components\InformeController;
 
 Route::get('/', function () {
@@ -19,7 +20,7 @@ Route::get('/', function () {
 });
 Route::get('/Inicio_de_sesion', function () {
     return view('Inicion_de_sesion');
-});
+})->name('Inicio_sesion');
 Route::get('/registro', function () {
     return view('registro');
 });
@@ -87,6 +88,10 @@ Route::middleware('auth')->group(function () {
         return response()->json(['status' => 'ok']);
     });
 
+    Route::get('/backup/database', [RespaldoController::class, 'backup'])
+    ->middleware('auth')
+    ->name('backup.database');
+
 
     //notificaciones
     Route::get('/notificaciones/leidas', function () {
@@ -124,6 +129,7 @@ Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inven
 Route::delete('inventario/{id}', [Crud_nventario::class, 'destroy'])->name('inventarios.destroy');
 
 Route::post('almacenes', [Crud_Almacen::class, 'PostAlmacen'])->name('Almacen.create');
+
 
 
 Route::post('/movimientos/tabla/Ingreso', [Crud_Movimientos::class, 'PostMovimientoIngreso'])->name('movimientos.ingreso');

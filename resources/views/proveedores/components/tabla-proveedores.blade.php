@@ -9,43 +9,18 @@
               <h2> <i class="bi bi-card-list"></i> &nbsp Materiales registrados</h2>
             </div>
             <!-- Botón para abrir el modal de registro de proveedor -->
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registrarProveedorModal">
-              <i class="bi bi-plus-circle"></i> Registrar Proveedor
-            </button>
-
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop3"> <i class="bi bi-plus-circle"></i> Registrar Proveedor</button>
             <!-- Modal Registrar Proveedor -->
-            <div class="modal fade" id="registrarProveedorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1 aria-labelledby="registrarProveedorLabel" aria-hidden="true">
+            <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                  <form action="{{ route('provedores.create') }}" method="POST">
-                    @csrf
-                    <div class="modal-header bg-success text-white">
-                      <h5 class="modal-title" id="registrarProveedorLabel">Registrar Nuevo Proveedor</h5>
-                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <label for="nombreNuevo" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombreNuevo" name="nombre" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="correoNuevo" class="form-label">Correo</label>
-                        <input type="email" class="form-control" id="correoNuevo" name="correo" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="telefonoNuevo" class="form-label">Teléfono</label>
-                        <input type="text" class="form-control" id="telefonoNuevo" name="telefono" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="direccionNuevo" class="form-label">Dirección</label>
-                        <input type="text" class="form-control" id="direccionNuevo" name="direccion" required>
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-success">Registrar</button>
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                  </form>
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Registro de proveedores</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    @include('components.form-proveedor')
+                  </div>
                 </div>
               </div>
             </div>
@@ -86,8 +61,13 @@
                 </button>
 
                 <!-- Botón para soft delete -->
-                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#eliminarProveedorModal{{ $proveedor->id }}">
-                  <i class="bi bi-trash"></i>
+                <button type="button"
+                  class="btn btn-outline-danger btn-sm shadow-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#eliminarProveedorModal{{ $proveedor->id }}"
+                  title="Eliminar Proveedor">
+                  <i class="bi bi-trash3-fill"></i>
+                  <span class="d-none d-md-inline ms-1">Eliminar</span>
                 </button>
 
 
@@ -190,25 +170,35 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <!-- Modal Soft Delete -->
-                <div class="modal fade" id="eliminarProveedorModal{{ $proveedor->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="eliminarProveedorLabel{{ $proveedor->id }}" aria-hidden="true">
+                <div class="modal fade" id="eliminarProveedorModal{{ $proveedor->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="eliminarProveedorLabel{{ $proveedor->id }}" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="eliminarProveedorLabel{{ $proveedor->id }}">Eliminar Proveedor</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <div class="modal-content border-0 shadow">
+                      <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="eliminarProveedorLabel{{ $proveedor->id }}">
+                          <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Eliminación
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                       </div>
-                      <div class="modal-body">
-                        ¿Estás seguro que deseas eliminar este proveedor?
+                      <div class="modal-body text-center p-4">
+                        <div class="mb-3">
+                          <i class="bi bi-person-x text-danger" style="font-size: 3rem;"></i>
+                        </div>
+                        <p class="fs-5">¿Estás seguro de que deseas eliminar al proveedor:</p>
+                        <h4 class="fw-bold text-dark">{{ $proveedor->nombre }}?</h4>
+                        <p class="text-muted small">Esta acción no se puede deshacer y podría afectar el historial de movimientos relacionados.</p>
                       </div>
-                      <div class="modal-footer">
+                      <div class="modal-footer bg-light d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancelar</button>
+
                         <form action="{{ route('proveedores.delete', $proveedor->id) }}" method="POST">
                           @csrf
                           @method('DELETE')
-                          <button type="submit" class="btn btn-danger">Eliminar</button>
+                          <button type="submit" class="btn btn-danger px-4 shadow-sm">
+                            <i class="bi bi-trash me-1"></i> Eliminar Definitivamente
+                          </button>
                         </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                       </div>
                     </div>
                   </div>

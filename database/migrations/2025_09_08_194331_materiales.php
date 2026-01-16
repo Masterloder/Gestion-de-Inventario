@@ -38,14 +38,12 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            
-            
-            
+
             // Asegúrate de que los nombres de las tablas coincidan exactamente
             $table->foreignId('unidad_medida_id')->constrained('unidades_medida');
             $table->foreignId('categoria_id')->constrained('categorias_materiales');
             $table->foreignId('categoria_especifica_id')->constrained('categorias_especificas');
-            
+            $table->date('fecha_caducidad')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

@@ -1,4 +1,5 @@
  <div class="container-fluid">
+    
      <div class="row">
          @include('components.siderbar_panelcontrol')
          <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -16,7 +17,7 @@
                 </div>
                     
                  <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                     <div class="modal-dialog modal-dialog-centered">
+                     <div class="modal-dialog modal-dialog-centered modal-xl">
                          <div class="modal-content">
                              <div class="modal-header">
                                  <h1 class="modal-title fs-5" id="staticBackdropLabel">ingreso de Materiales</h1>
@@ -32,7 +33,7 @@
                      <div class="modal-dialog modal-dialog-centered">
                          <div class="modal-content">
                              <div class="modal-header">
-                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">ingreso de </h1>
+                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Ingreso de Materiales </h1>
                                  <button type="button" class="btn-close  " data-bs-dismiss="modal" aria-label="Close"></button>
                              </div>
                              <div class="modal-body">
@@ -278,7 +279,7 @@
  </div>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
  <script src="https://unpkg.com/bootstrap-table@1.22.4/dist/bootstrap-table.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
  <script src="https://unpkg.com/bootstrap-table@1.22.4/dist/locale/bootstrap-table-es-ES.min.js"></script>
  <script
      src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.js"
@@ -288,6 +289,9 @@
  <script src="dashboard.js" class="astro-vvvwv3sm"></script>
  <script>
      document.addEventListener('DOMContentLoaded', function() {
-         $('tabla-movimientos').bootstrapTable();
-     });
+    // Si usas jQuery (asegúrate de haberlo cargado antes)
+    if (typeof $ !== 'undefined') {
+        $('#tabla-movimientos').bootstrapTable(); 
+    }
+});
  </script>

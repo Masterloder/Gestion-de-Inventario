@@ -6,6 +6,7 @@ use App\Models\Materiales;
 use App\Models\Movimientos;
 use App\Models\Provedores;
 use App\Models\Proveedores;
+use App\Notifications\ProveedoresNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -30,7 +31,9 @@ class Crud_Proveedor extends Controller
         ]);
         $data = $request->all();
         $this->create($data);
-        return redirect("/panel_de_control/Logistica")->withSuccess('');
+        
+        auth()->user()->notify(new ProveedoresNotification('create', $data['nombre']));
+        return redirect()->back()->with('success','El proveedor a sido creado con exito');
     }
 
 

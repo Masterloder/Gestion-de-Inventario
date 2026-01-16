@@ -20,7 +20,7 @@ class movimientoNotification extends Notification
     {
         $this->tipo = $tipo;
         $this->movimiento = $movimiento;
-        $this->user = auth()->user()->name ;    
+        $this->user = auth()->user()->name ;
     }
 
     public function via($notifiable)

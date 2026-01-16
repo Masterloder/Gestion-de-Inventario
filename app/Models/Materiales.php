@@ -18,8 +18,12 @@ class Materiales extends Model
         'unidad_medida_id',
         'categoria_id',
         'categoria_especifica_id',
+        'fecha_caducidad',
     ];
-    
+    protected $casts = [
+        'fecha_caducidad' => 'date',
+    ];
+
 
     public function proveedores()
     {
@@ -29,7 +33,7 @@ class Materiales extends Model
     {
         return $this->hasMany(Movimientos::class, 'id_material');
     }
-    
+
     public function categoria()
     {
         return $this->belongsTo(CategoriaMaterial::class, 'categoria_id');
