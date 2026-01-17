@@ -11,11 +11,11 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nombre de la Unidad</label>
-                        <input type="text" name="nombre_unidad" class="form-control" value="{{ $unidad->nombre_unidad }}" required>
+                        <input type="text" name="nombre_unidad" class="form-control" value="{{ $unidad->nombre_unidad }}" maxlength="25" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Símbolo</label>
-                        <input type="text" name="simbolo" class="form-control" value="{{ $unidad->simbolo }}" required>
+                        <input type="text" name="simbolo" class="form-control" value="{{ $unidad->simbolo }}" maxlength="5" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -65,11 +65,11 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nombre de la Unidad</label>
-                        <input type="text" name="nombre_unidad" class="form-control" placeholder="Ejemplo: Kilogramo" required>
+                        <input type="text" name="nombre_unidad" class="form-control" placeholder="Ejemplo: Kilogramo" maxlength="25" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Símbolo</label>
-                        <input type="text" name="simbolo" class="form-control" placeholder="Ejemplo: kg" required>
+                        <input type="text" name="simbolo" class="form-control" placeholder="Ejemplo: kg" maxlength="5" required>
                     </div>
                 </div>
                 <div class="modal-footer">

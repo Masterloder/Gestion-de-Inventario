@@ -112,7 +112,7 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label fw-bold">Nombre</label>
-                                            <input type="text" name="nombre" id="edit_nombre" class="form-control" required>
+                                            <input type="text" name="nombre" id="edit_nombre" class="form-control" maxlength="30" required>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -163,7 +163,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label fw-bold">Descripción</label>
-                                        <textarea name="descripcion" id="edit_descripcion" class="form-control" rows="2"></textarea>
+                                        <textarea name="descripcion" id="edit_descripcion" class="form-control" rows="2" maxlength="250" ></textarea>
                                     </div>
                                 </div>
                                 <div class="modal-footer">

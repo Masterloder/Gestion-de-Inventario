@@ -10,12 +10,7 @@
 
             @php
                 $configOptions = [
-                    [
-                        'title' => 'Opciones de Configuración',
-                        'desc'  => 'Administra parámetros generales y preferencias del sistema.',
-                        'link'  => '#',
-                        'icon'  => 'bi-sliders'
-                    ],
+                    
                     [
                         'title' => 'Gestión de Usuarios',
                         'desc'  => 'Administra usuarios, roles, permisos y perfiles de acceso.',

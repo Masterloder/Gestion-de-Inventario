@@ -7,6 +7,7 @@
             class="form-control"
             id="nombre"
             name="nombre"
+            maxlength="25"
             required />
     </div>
     <div class="mb-3">
@@ -15,6 +16,7 @@
             class="form-control"
             id="descripcion"
             name="descripcion"
+            maxlength="25"
             required />
     </div>
     <div class="mb-3">

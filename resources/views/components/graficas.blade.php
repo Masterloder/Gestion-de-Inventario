@@ -11,8 +11,8 @@
                             <div class="card-header">
                                 <div class="row">
                                     <div class="col-sm-6 text-left">
-                                        <h5 class="card-category">Movimientos totales</h5>
-                                        <h2 class="card-title">Movimientos</h2>
+                                        <h5 class="card-category">Registro de Movimientos</h5>
+                                        <h2 class="card-title">Materiales</h2>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="btn-group btn-group-toggle float-end" data-toggle="buttons">

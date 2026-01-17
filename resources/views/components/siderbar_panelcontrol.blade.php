@@ -90,7 +90,7 @@
        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
    </symbol>
  </svg>
- <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-white">
+ <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-white position: fixed  ">
    <div
      class="offcanvas-md offcanvas-end bg-white"
      tabindex="-1"
@@ -171,17 +171,11 @@
          </li>
        </ul>
 
-       <ul class="nav flex-column mb-3 mt-auto">
+       <ul class="nav flex-column mb-3 mt-auto mb-1">
          <li class="nav-item">
            <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" #">
              <i class="bi bi-question-circle fs-5"></i>
              Obtener Ayuda
-           </a>
-         </li>
-         <li class="nav-item">
-           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="#">
-             <i class="bi bi-arrow-repeat fs-5"></i>
-             Cambiar Cuenta
            </a>
          </li>
        </ul>

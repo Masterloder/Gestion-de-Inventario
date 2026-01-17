@@ -38,6 +38,7 @@
                                                     class="form-control @error('nombre_categoria') is-invalid @enderror"
                                                     id="nombre_categoria"
                                                     placeholder="Escribe el nombre aquí..."
+                                                    maxlength="25"
                                                     required
                                                     autofocus>
                                                 @error('nombre_categoria')
@@ -90,6 +91,7 @@
                                                     id="nombre_especifico"
                                                     class="form-control"
                                                     placeholder="Ej: Naturales, Cerámicas Gruesas..."
+                                                    maxlength="25"
                                                     required>
                                             </div>
 
@@ -154,6 +156,7 @@
                                                             id="nombre_especifico_nuevo{{ $cat->id }}"
                                                             class="form-control"
                                                             placeholder="Ej: Naturales, Procesados..."
+                                                            maxlength="30"
                                                             required>
                                                     </div>
                                                 </div>
@@ -230,11 +233,11 @@
                                                 <div class="modal-body">
                                                     <div class="mb-3">
                                                         <label for="nombre_categoria_{{ $catEsp->id }}" class="form-label fs-5">Nombre de la Categoría</label>
-                                                        <input type="text" class="form-control" id="nombre_categoria_{{ $catEsp->id }}" name="nombre_categoria" value="{{ $cat->nombre_categoria }}" required>
+                                                        <input type="text" class="form-control" id="nombre_categoria_{{ $catEsp->id }}" name="nombre_categoria" value="{{ $cat->nombre_categoria }}" maxlength="30" required>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="nombre_especifico_{{ $catEsp->id }}" class="form-label fs-5">Nombre de la Categoría Específica</label>
-                                                        <input type="text" class="form-control" id="nombre_especifico_{{ $catEsp->id }}" name="nombre_especifico" value="{{ $catEsp->nombre_especifico }}" required>
+                                                        <input type="text" class="form-control" id="nombre_especifico_{{ $catEsp->id }}" name="nombre_especifico" value="{{ $catEsp->nombre_especifico }}" maxlength="30" required>
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">

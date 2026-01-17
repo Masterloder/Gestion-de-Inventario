@@ -62,12 +62,11 @@
 
                 <!-- Botón para soft delete -->
                 <button type="button"
-                  class="btn btn-outline-danger btn-sm shadow-sm"
+                  class="btn btn-danger btn-sm shadow-sm"
                   data-bs-toggle="modal"
                   data-bs-target="#eliminarProveedorModal{{ $proveedor->id }}"
                   title="Eliminar Proveedor">
-                  <i class="bi bi-trash3-fill"></i>
-                  <span class="d-none d-md-inline ms-1">Eliminar</span>
+                  <i class="bi bi-trash3"></i>
                 </button>
 
 
