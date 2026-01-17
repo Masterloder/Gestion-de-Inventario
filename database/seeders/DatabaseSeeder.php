@@ -26,10 +26,16 @@ class DatabaseSeeder extends Seeder
         // 1. Catálogos base (Sin dependencias)
         $this->call([
             Categorias::class,
-            UnidadesMedicion::class,
-            ProvedoresSeeder::class,
-            AlmacenesSeeder::class,
+            UnidadesMedicion::class
         ]);
+
+        for ($i = 0; $i < 2; $i++) {
+
+            $this->call([
+                ProvedoresSeeder::class,
+                AlmacenesSeeder::class,
+            ]);
+        }
 
         // 2. Entidades que dependen de los catálogos
         $this->call([
