@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
 
         // 3. Ejecutar MovimientosSeeder 10 veces
         // Lo ponemos fuera del array para poder usar un bucle
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 70; $i++) {
             $this->call(MovimientosSeeder::class);
         }
     }

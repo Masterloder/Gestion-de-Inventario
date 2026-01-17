@@ -18,14 +18,14 @@ class MovimientosSeeder extends Seeder
         $almacenId = 1;
 
         // 1. SIMULAR INGRESO (Entrada)
-        $cantidadEntrada = 100;
+        $cantidadEntrada = fake()->numberBetween(1,500);
         Movimientos::create([
             'tipo_movimiento'   => 'Entrada',
             // Genera una fecha aleatoria entre el día 1 y el último día del mes actual
             'fecha_operacion'   => fake()->dateTimeThisMonth(), 
             'cantidad'          => $cantidadEntrada,
             'numero_referencia' => 'MOV-0001-ING-' . strtoupper(Str::random(4)),
-            'id_material'       => $material->id,
+            'id_material'       => fake()->numberBetween(1,54),
             'id_proveedor'      => 1,
             'id_almacen'        => $almacenId,
             'id_usuario'        => $user->id
@@ -36,14 +36,14 @@ class MovimientosSeeder extends Seeder
                   ->increment('cantidad_actual', $cantidadEntrada);
 
         // 2. SIMULAR SALIDA
-        $cantidadSalida = 20;
+        $cantidadSalida = fake()->numberBetween(1,500);
         Movimientos::create([
             'tipo_movimiento'   => 'Salida',
             // También aleatoria dentro de este mes
             'fecha_operacion'   => fake()->dateTimeThisMonth(),
             'cantidad'          => $cantidadSalida,
             'numero_referencia' => 'MOV-0002-SAL-' . strtoupper(Str::random(4)),
-            'id_material'       => $material->id,
+            'id_material'       => fake()->numberBetween(1,54),
             'id_almacen'        => $almacenId,
             'destino'           => 'Obra Sector Sur',
             'id_usuario'        => $user->id
