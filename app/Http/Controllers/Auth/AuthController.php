@@ -59,10 +59,12 @@ class AuthController extends Controller
 
     public function postRegistration(Request $request): RedirectResponse
     {
-        // 1. Convertir email a minúsculas
+        // 1. Convertir email,nombre,apellido a minúsculas
         $request->merge([
-            'email' => strtolower($request->input('email'))
-        ]);
+        'email'     => strtolower($request->input('email')),
+        'firstname' => ucfirst(strtolower($request->input('firstname'))),
+        'lastname'  => ucfirst(strtolower($request->input('lastname'))),
+    ]);
 
         
 

@@ -10,11 +10,9 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
+        // Crear usuario administrador
         $user = new User();
         $user->name = 'administrador';
         $user->firstname = 'Name';
@@ -25,19 +23,23 @@ class DatabaseSeeder extends Seeder
         $user->password = bcrypt('domxfQ7c');
         $user->save();
 
-
+        // 1. Catálogos base (Sin dependencias)
         $this->call([
-            // 1. Catálogos base (Sin dependencias)
             Categorias::class,
             UnidadesMedicion::class,
             ProvedoresSeeder::class,
-            // 2. Entidades que dependen de los catálogos anteriores
-            MaterialesSeeder::class,
-            // Por ejemplo, Materiales necesita categoria_id y unidad_medida_id
-            // 3. (Opcional) Si tienes un seeder para movimientos
-            // MovimientosSeeder::class,
+            AlmacenesSeeder::class,
         ]);
+
+        // 2. Entidades que dependen de los catálogos
+        $this->call([
+            MaterialesSeeder::class,
+        ]);
+
+        // 3. Ejecutar MovimientosSeeder 10 veces
+        // Lo ponemos fuera del array para poder usar un bucle
+        for ($i = 0; $i < 30; $i++) {
+            $this->call(MovimientosSeeder::class);
+        }
     }
 }
-
-

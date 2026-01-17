@@ -4,10 +4,10 @@
     {{-- SELECT: ALMACENES --}}
     <div class="mb-3 col-md-6">
         <label for="id_almacen1" class="form-label">Almacén de Origen <span class="text-danger">*</span></label>
-        <select class="form-control" name="id_almacen1" id="id_almacen1" required>
+        <select class="form-control" name="id_almacen1" id="id_almacen1" required onchange="filtrarMateriales()">
             <option selected disabled value="">-- Elige un Almacén --</option>
             @foreach ($almacenes as $almacen)
-                <option value="{{ $almacen->id }}">{{ $almacen->nombre }} | {{ $almacen->direccion }}</option>
+            <option value="{{ $almacen->id }}">{{ $almacen->nombre }} | {{ $almacen->direccion }}</option>
             @endforeach
         </select>
     </div>
@@ -19,145 +19,136 @@
     </div>
 
     {{-- SELECT: MATERIALES --}}
+    {{-- SELECT: MATERIALES --}}
     <div class="mb-3 col-12">
-    <label for="materiales1" class="form-label fw-bold">Material a Dar de Salida <span class="text-danger">*</span></label>
-    <select class="form-select shadow-sm" name="id_material1" id="materiales1" required>
-        <option selected disabled value="">-- Primero elige un Almacén --</option>
-        
-        @foreach ($inventario as $item)
+        <label for="materiales1" class="form-label fw-bold">Material a Dar de Salida <span class="text-danger">*</span></label>
+        <select class="form-select shadow-sm" name="id_material1" id="materiales1" required>
+            <option selected disabled value="">-- Primero elige un Almacén --</option>
+
+            @foreach ($inventario as $item)
             @php
-                $material = $item->materiales;
-                if (!$material) continue;
-                
-                $nombreCat = is_object($material->categoria) 
-                             ? ($material->categoria->nombre_categoria ?? 'General') 
-                             : ($material->categoria ?? 'Sin Categoría');
+            // IMPORTANTE: Según tu controlador la relación es 'material'
+            $mat = $item->material;
+
+            if (!$mat) continue;
+
+            // Acceder al nombre de la categoría a través de la relación cargada
+            $nombreCat = ($mat->categoria)
+            ? ($mat->categoria->nombre_categoria ?? 'General')
+            : 'Sin Categoría';
+
+            // Acceder a la unidad de medida
+            $nombreUnidad = ($mat->unidadMedida)
+            ? ($mat->unidadMedida->nombre ?? 'uds')
+            : 'uds';
             @endphp
-            {{-- Usamos style="display: none" para que no se vean al cargar --}}
             <option
-                value="{{ $item->id_materiales }}"
+                value="{{ $mat->id }}"
                 data-almacen="{{ $item->id_almacen }}"
                 data-stock="{{ $item->cantidad_actual }}"
-                data-unidad="{{ $material->unidad_medida ?? 'uds' }}"
-                style="display: none;"> 
-                {{ $material->nombre }} | Stock: {{ $item->cantidad_actual }} {{ $material->unidad_medida }} | Cat: {{ $nombreCat }}
+                data-unidad="{{ $nombreUnidad }}"
+                style="display: none;"
+                hidden
+                disabled>
+                {{-- AQUÍ SE MUESTRA EL NOMBRE: --}}
+                {{ $mat->nombre }} | Stock: {{ number_format($item->cantidad_actual, 2) }} {{ $nombreUnidad }} | Cat: {{ $nombreCat }}
             </option>
-        @endforeach
-    </select>
-</div>
+            @endforeach
+        </select>
+    </div>
 
     {{-- INPUT: CANTIDAD --}}
     <div class="mb-3 col-12">
-        <label for="cantidad_input" class="form-label" id="cantidad_label">Cantidad a retirar (Seleccione material)</label>
+        <label for="cantidad_input" class="form-label" id="cantidad_label">Cantidad a retirar</label>
         <input
             type="number"
-            min="1"
+            min="0.01"
             step="any"
             class="form-control"
             id="cantidad_input"
             name="cantidad"
             required
-            disabled {{-- Deshabilitado hasta que elijan material --}}
+            disabled
+            onkeypress="return soloNumeros(event)"
             placeholder="0.00">
-        <div class="form-text text-muted" id="ayuda_stock"></div>
+        <div class="form-text" id="ayuda_stock"></div>
     </div>
 
     <div class="col-12 text-end">
-        <button type="submit" class="btn btn-primary" id="btnSubmit">Salida de materiales</button>
+        <button type="submit" class="btn btn-primary" id="btnSubmit">Registrar Salida</button>
     </div>
+</form>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selectAlmacen = document.getElementById('id_almacen1');
-    const selectMaterial = document.getElementById('materiales1');
-    const inputCantidad = document.getElementById('cantidad_input');
-    const etiquetaCantidad = document.getElementById('cantidad_label');
-    const ayudaStock = document.getElementById('ayuda_stock');
-    const opcionesMateriales = Array.from(selectMaterial.querySelectorAll('option'));
+    /**
+     * Bloquea cualquier carácter que no sea número o punto
+     */
+    function soloNumeros(evt) {
+        const charCode = (evt.which) ? evt.which : evt.keyCode;
+        // Permitir números (48-57) y punto (46)
+        if (charCode !== 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+            evt.preventDefault();
+            return false;
+        }
+        return true;
+    }
 
-    // 1. Filtrar materiales cuando cambia el almacén
-    selectAlmacen.addEventListener('change', function() {
-        const almacenId = this.value;
-        
-        // Resetear material e input
-        selectMaterial.value = "";
-        inputCantidad.value = "";
-        inputCantidad.disabled = true;
-        etiquetaCantidad.textContent = "Cantidad a retirar";
-        ayudaStock.textContent = "";
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAlmacen = document.getElementById('id_almacen1');
+        const selectMaterial = document.getElementById('materiales1');
+        const inputCantidad = document.getElementById('cantidad_input');
+        const etiquetaCantidad = document.getElementById('cantidad_label');
+        const ayudaStock = document.getElementById('ayuda_stock');
 
-        opcionesMateriales.forEach(opt => {
-            if (opt.value === "") {
-                opt.hidden = false;
-                opt.textContent = "-- Seleccione un Material --";
-            } else {
-                const coincide = opt.getAttribute('data-almacen') === almacenId;
-                opt.hidden = !coincide;
-                opt.disabled = !coincide;
-            }
-        });
-    });
+        // 1. Filtrar materiales por almacén
+        window.filtrarMateriales = function() {
+            const almacenId = selectAlmacen.value;
+            const opciones = selectMaterial.querySelectorAll('option');
 
-    // 2. Actualizar límites cuando cambia el material
-    selectMaterial.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const stockMax = parseFloat(selectedOption.getAttribute('data-stock'));
-        const unidad = selectedOption.getAttribute('data-unidad');
+            selectMaterial.value = "";
+            inputCantidad.value = "";
+            inputCantidad.disabled = true;
+            ayudaStock.textContent = "";
 
-        if (stockMax > 0) {
+            opciones.forEach(opt => {
+                if (opt.value === "") {
+                    opt.style.display = "block";
+                    opt.disabled = false;
+                } else {
+                    const coincide = opt.getAttribute('data-almacen') === almacenId;
+                    opt.style.display = coincide ? "block" : "none";
+                    opt.hidden = !coincide;
+                    opt.disabled = !coincide;
+                }
+            });
+        };
+
+        // 2. Configurar límites al seleccionar material
+        selectMaterial.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (!selectedOption.value) return;
+
+            const stockMax = parseFloat(selectedOption.getAttribute('data-stock'));
+            const unidad = selectedOption.getAttribute('data-unidad');
+
             inputCantidad.disabled = false;
             inputCantidad.max = stockMax;
-            inputCantidad.placeholder = `Máximo: ${stockMax}`;
-            etiquetaCantidad.innerHTML = `Cantidad a retirar <span class="badge bg-info">Disponible: ${stockMax} ${unidad}</span>`;
-            ayudaStock.textContent = `No puedes despachar más de ${stockMax} ${unidad}.`;
-        } else {
-            inputCantidad.disabled = true;
-            inputCantidad.value = "";
-            ayudaStock.textContent = "Este material no tiene stock disponible en este almacén.";
-        }
+            inputCantidad.placeholder = `Máximo disponible: ${stockMax}`;
+            etiquetaCantidad.innerHTML = `Cantidad a retirar <span class="badge bg-info">Stock: ${stockMax} ${unidad}</span>`;
+            ayudaStock.className = "form-text text-muted";
+            ayudaStock.textContent = `No puede exceder los ${stockMax} ${unidad}.`;
+        });
+
+        // 3. Validar entrada en tiempo real (evitar letras y excesos)
+        inputCantidad.addEventListener('input', function() {
+            const max = parseFloat(this.max);
+            let valor = parseFloat(this.value);
+
+            if (valor > max) {
+                this.value = max;
+                alert("Cantidad ajustada al máximo disponible: " + max);
+            }
+            if (valor < 0) this.value = 0;
+        });
     });
-
-    // 3. Validación en tiempo real (No permitir escribir más del máximo)
-    inputCantidad.addEventListener('input', function() {
-        const max = parseFloat(this.max);
-        const actual = parseFloat(this.value);
-
-        if (actual > max) {
-            this.value = max; // Forzar el valor al máximo permitido
-            alert("No puedes exceder el stock disponible (" + max + ")");
-        }
-    });
-
-
-    function filtrarMateriales() {
-    const almacenSeleccionado = selectAlmacen.value; // El ID del almacén elegido
-    const opciones = selectMaterial.options;
-
-    // 1. Limpiar selecciones previas
-    selectMaterial.value = "";
-    inputCantidad.value = "";
-    inputCantidad.disabled = true;
-
-    // 2. Recorrer opciones y mostrar solo las que coincidan
-    for (let i = 0; i < opciones.length; i++) {
-        const opt = opciones[i];
-        
-        // El placeholder siempre se queda
-        if (opt.value === "") {
-            opt.style.display = "block";
-            continue;
-        }
-
-        // Comparamos el data-almacen de la opción con el ID seleccionado
-        if (opt.getAttribute('data-almacen') == almacenSeleccionado) {
-            opt.style.display = "block"; // Se muestra
-            opt.disabled = false;        // Se habilita para envío
-        } else {
-            opt.style.display = "none";  // Se oculta
-            opt.disabled = true;         // Se deshabilita para evitar envíos erróneos
-        }
-    }
-}
-});
 </script>
-</form>

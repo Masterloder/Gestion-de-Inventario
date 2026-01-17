@@ -41,6 +41,12 @@ class inventarioNotification extends Notification
                 'icono' => 'bi-plus-circle',
                 'color' => 'text-success'
             ],
+            'Salida' => [
+                'titulo' => 'Nuevo Movimiento de Inventario',
+                'mensaje' => "Se ha registrado la Salida de : {$this->Nombrematerial} - Cantidad: {$this->cantidad} por el usuario: {$this->user}",
+                'icono' => 'bi bi-dash-circle',
+                'color' => 'text-success'
+            ],
             'update' => [
                 'titulo' => 'Movimiento Actualizado',
                 'mensaje' => "Cambios Efectuados en: {$this->Nombrematerial} realizados por el usuario: {$this->user}",

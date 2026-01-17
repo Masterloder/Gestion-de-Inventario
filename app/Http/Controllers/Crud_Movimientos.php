@@ -188,6 +188,7 @@ class Crud_Movimientos extends Controller
         if (!$result) {
             return redirect("/Movimientos/tabla")->withErrors("Stock insuficiente en el almacén seleccionado.");
         }
+        $material = Materiales::findOrFail($data['id_material1']);
 
         // 2. Registrar el movimiento de Salida
         Movimientos::create([
@@ -201,7 +202,7 @@ class Crud_Movimientos extends Controller
             'destino'           => null,
             'id_usuario'        => auth()->id()
         ]);
-        auth()->user()->notify(new inventarioNotification('Salida', '', $data['cantidad']));
+        auth()->user()->notify(new inventarioNotification('Salida', $material->nombre, $data['cantidad']));
         return redirect("/Movimientos/tabla")->withSuccess("Salida de material registrada.");
     }
 
@@ -259,49 +260,46 @@ class Crud_Movimientos extends Controller
             'id_material'       => 'required|exists:materiales,id',
             'id_usuario'        => 'required|exists:users,id',
             'cantidad'          => 'required|integer|min:1',
-            'numero_referencia' => 'nullable|string|max:50',
+            'numero_referencia' => 'required|string|max:50',
         ]);
 
-        // Usamos una transacción para asegurar que el movimiento y el inventario se actualicen juntos
         DB::beginTransaction();
 
         try {
+            // 1. Buscar el inventario actual para este material y almacén
             $inventario = Inventario::where('id_material', $movimiento->id_material)
                 ->where('id_almacen', $movimiento->id_almacen)
                 ->first();
 
             if (!$inventario) {
-                return back()->withInput()->with('error', 'No existe un registro de inventario para este material en este almacén.');
+                return back()->with('error', 'No se encontró registro de inventario para este material.');
             }
 
-            $cantidadAnterior = $movimiento->cantidad;
-            $cantidadNueva = $request->cantidad;
-            $diferencia = $cantidadNueva - $cantidadAnterior;
-
-            // Lógica según el TIPO de movimiento (Entrada o Salida)
-            // Asumiendo que tienes un campo 'tipo' o 'tipo_movimiento'
-            if ($movimiento->tipo == 'Entrada') {
-                // Si es ENTRADA y la diferencia es positiva, sumamos al inventario.
-                // Si es negativa, estamos reduciendo la entrada, por lo tanto restamos.
-                $nuevoStockSimulado = $inventario->cantidad_actual + $diferencia;
+            // 2. REVERTIR el efecto del movimiento original
+            // Si fue Entrada, restamos la cantidad vieja. Si fue Salida, la devolvemos (sumamos).
+            if ($movimiento->tipo_movimiento === 'Entrada') {
+                $inventario->cantidad_actual -= $movimiento->cantidad;
             } else {
-                // Si es SALIDA y la diferencia es positiva, estamos sacando MÁS (restamos al inventario).
-                // Si es negativa, estamos sacando MENOS (devolvemos al inventario).
-                $nuevoStockSimulado = $inventario->cantidad_actual - $diferencia;
+                $inventario->cantidad_actual += $movimiento->cantidad;
             }
 
-            // VALIDACIÓN DE STOCK: No podemos dejar el inventario en negativo
-            if ($nuevoStockSimulado < 0) {
-                return back()->withInput()->with('error', 'Error: No hay suficiente stock para realizar este ajuste. El inventario quedaría en: ' . $nuevoStockSimulado);
+            // 3. APLICAR el efecto de la nueva cantidad
+            // Usamos la cantidad que viene del formulario ($request->cantidad)
+            if ($movimiento->tipo_movimiento === 'Entrada') {
+                $inventario->cantidad_actual += $request->cantidad;
+            } else {
+                // Si es salida, verificamos que el stock no quede en negativo después del ajuste
+                if ($inventario->cantidad_actual < $request->cantidad) {
+                    return back()->with('error', 'Stock insuficiente para procesar esta modificación.');
+                }
+                $inventario->cantidad_actual -= $request->cantidad;
             }
 
-            // Aplicamos el cambio al inventario
-            $inventario->cantidad_actual = $nuevoStockSimulado;
+            // 4. Guardar cambios en el inventario
             $inventario->save();
 
-            // Actualizamos el movimiento
+            // 5. Actualizar el registro del movimiento
             $movimiento->update([
-                'id_material'       => $request->id_material,
                 'id_usuario'        => $request->id_usuario,
                 'cantidad'          => $request->cantidad,
                 'numero_referencia' => $request->numero_referencia,
@@ -309,18 +307,16 @@ class Crud_Movimientos extends Controller
 
             DB::commit();
 
-            // Notificación
+            // Notificación opcional
             $material = Materiales::find($request->id_material);
             auth()->user()->notify(new inventarioNotification('update', $material->nombre, $request->cantidad));
 
-            return redirect()->to('/Movimientos/tabla')
-                ->with('success', 'El movimiento y el inventario se han actualizado correctamente.');
+            return redirect()->to('/Movimientos/tabla')->with('success', 'Movimiento actualizado y stock ajustado correctamente.');
         } catch (\Exception $ex) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Ocurrió un error: ' . $ex->getMessage());
+            return back()->withInput()->with('error', 'Ocurrió un error inesperado: ' . $ex->getMessage());
         }
     }
-
 
 
     public function destroy($id)
@@ -359,7 +355,7 @@ class Crud_Movimientos extends Controller
         $trabajadores = User::select('id', 'name')->get();
 
         // 3. Inventario y Mapa (Fuente de verdad para validaciones en el frontend)
-        $inventario = Inventario::with(['material:id,unidad_medida_id', 'almacen:id,nombre'])
+        $inventario = Inventario::with(['material:id,nombre,unidad_medida_id,categoria_id', 'almacen:id,nombre'])
             ->where('cantidad_actual', '>', 0)
             ->get();
 

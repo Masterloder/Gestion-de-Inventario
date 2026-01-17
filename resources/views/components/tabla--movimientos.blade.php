@@ -158,6 +158,17 @@
                                         @method('PUT')
                                         <div class="modal-body row">
 
+                                        <div class="mb-3 col-md-6">
+                                            <label for="TipoMovimiento_{{ $movimiento->id }}" class="form-label" >Tipo de Movimiento</label>
+                                            <input type="text"
+                                            id="TipoMovimiento_{{ $movimiento->id }}"
+                                            class="form-control"
+                                            value="{{ $movimiento->tipo_movimiento }}"
+                                            readonly
+                                            >
+
+                                        </div>
+
                                             <div class="mb-3 col-md-6">
                                                 <label for="id_material_{{ $movimiento->id }}" class="form-label">Material</label>
                                                 <input type="text"
