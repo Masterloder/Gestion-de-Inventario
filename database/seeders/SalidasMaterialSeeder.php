@@ -26,7 +26,6 @@ class SalidasMaterialSeeder extends Seeder
 
         // Generar 20 salidas aleatorias
         for ($i = 0; $i < 20; $i++) {
-            
             // Emulamos la lógica de fecha del formulario (hoy +/- 7 días)
             $fechaAleatoria = now()->addDays(rand(-7, 7));
 
@@ -37,7 +36,7 @@ class SalidasMaterialSeeder extends Seeder
                 'cantidad'         => rand(1, 50), // Cantidad aleatoria
                 'tipo_movimiento'  => 2, // 2 representa "Salida" según tu lógica previa
                 'fecha_operacion'  => $fechaAleatoria,
-                'ubicacion_entrega'=> Arr::random($destinos), // Campo de tu formulario
+                'destinos'         => Arr::random($destinos), // Campo de tu formulario
                 'created_at'       => $fechaAleatoria,
                 'updated_at'       => $fechaAleatoria,
             ]);

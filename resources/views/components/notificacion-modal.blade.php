@@ -62,12 +62,19 @@
          }
      }
  </style>
- @if (session('error'))
+ @if (session('error') || $errors->any())
  <div id="errorModal" class="modal-overlay">
      <div class="modal-content">
          <div class="modal-icon">❌</div>
-         <h3>Error de Acceso</h3>
-         <p>{{ session('error') }}</p>
+         <h3>Error</h3>
+         <p>
+             {{ session('error') }}
+             @if($errors->any())
+             @foreach ($errors->all() as $error)
+             {{ $error }}<br>
+             @endforeach
+             @endif
+         </p>
          <button onclick="closeModal()" class="btn-close-modal">Cerrar</button>
          <div class="progress-bar"></div>
      </div>

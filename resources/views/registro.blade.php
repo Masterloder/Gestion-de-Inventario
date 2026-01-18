@@ -110,14 +110,14 @@
                     <div style="display: flex; gap: 15px;">
                         <div class="form-group" style="flex: 1;">
                             <div class="input-wrapper">
-                                <input type="text" id="firstname" name="firstname" required oninput="this.value = this.value.replace(/[0-9]/g, '')">
+                                <input type="text" id="firstname" name="firstname" autocomplete="off" required oninput="this.value = this.value.replace(/[0-9]/g, '')">
                                 <label for="firstname">Nombre</label>
                             </div>
                             <span class="error-message" id="firstNameError"></span>
                         </div>
                         <div class="form-group" style="flex: 1;">
                             <div class="input-wrapper">
-                                <input type="text" id="lastname" name="lastname" required oninput="this.value = this.value.replace(/[0-9]/g, '')">
+                                <input type="text" id="lastname" name="lastname" required autocomplete="off" oninput="this.value = this.value.replace(/[0-9]/g, '')">
                                 <label for="lastname">Apellido</label>
                             </div>
                             <span class="error-message" id="lastNameError"></span>
@@ -208,7 +208,7 @@
 
             // Validaciones adicionales (Email y Nombres)
             const email = document.getElementById('email').value;
-            const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9]{2,}$/;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9]{2,}$/;
             if (!emailRegex.test(email)) {
                 document.getElementById('emailError').innerText = "Correo electrónico no válido.";
                 isValid = false;

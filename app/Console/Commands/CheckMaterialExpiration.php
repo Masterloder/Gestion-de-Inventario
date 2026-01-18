@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Movimientos;
+use App\Notifications\inventarioNotification;
 use Illuminate\Console\Command;
 
 class CheckMaterialExpiration extends Command

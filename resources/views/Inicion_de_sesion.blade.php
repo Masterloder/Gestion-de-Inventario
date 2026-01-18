@@ -195,7 +195,7 @@
             </div>
         </div>
 
-            @include('components.notificacion-modal')
+        @include('components.notificacion-modal')
         <div class="form-section">
             <div class="login-card">
                 <div class="login-header">
@@ -230,7 +230,7 @@
                                 Recuerdame
                             </span>
                         </label>
-                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                       <a href="{{ route('password.request') }}" class="forgot-password">¿Olvidaste tu contraseña?</a>
                     </div>
 
                     <button type="submit" class="login-btn btn">

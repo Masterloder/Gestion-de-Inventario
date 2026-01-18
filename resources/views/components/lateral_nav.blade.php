@@ -118,7 +118,7 @@
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="UsuarioBarra" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ asset('images/Usuarios/Usuario.jpg') }}" alt="User" width="32" height="32" class="rounded-circle me-2 border border-secondary" />
                     <span class="d-none d-sm-flex flex-column align-items-start me-1">
-                        <strong class="lh-1" style="font-size: 0.85rem;">{{ Auth::user()->name }}</strong>
+                        <strong class="lh-1" style="font-size: 0.85rem;"> {{ Auth::user()->firstname }}</strong>
                         <small class="text-white-50 text-lowercase" style="font-size: 0.7rem;">{{ Auth::user()->rol }}</small>
                     </span>
                 </a>

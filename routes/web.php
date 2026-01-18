@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SecurityController;
 use App\Models\Inventario;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Route;
@@ -12,7 +13,10 @@ use App\Http\Controllers\Crud_nventario;
 use App\Http\Controllers\Crud_Proveedor;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InformesController;
+use App\Http\Controllers\RecoveryController;
+use App\Http\Controllers\ResetSecurityController;
 use App\Http\Controllers\RespaldoController;
+use App\Models\SecurityQuestion;
 use App\View\Components\InformeController;
 
 Route::get('/', function () {
@@ -25,12 +29,34 @@ Route::get('/registro', function () {
     return view('registro');
 });
 
+Route::get('/Preguntas', [SecurityController::class, 'index'])->name('preguntas_secretas')->middleware('auth');
+Route::post('/configuracion-seguridad', [SecurityController::class, 'store'])->name('security.store')->middleware('auth');
 
-Route::middleware('auth')->group(function () {
+
+Route::get('/olvide-mi-clave', function () {
+    return view('Preguntas_de_Seguridad.forgot-password');
+})->name('password.request');
+
+// 2. Procesar el correo y mandar a las preguntas
+Route::post('/verificar-correo', [RecoveryController::class, 'checkEmail'])->name('password.recovery.checkEmail');
+
+// 3. Tus rutas anteriores de preguntas
+Route::get('/verificar-preguntas', [RecoveryController::class, 'showVerifyForm'])->name('password.security.verify');
+Route::post('/verificar-preguntas', [RecoveryController::class, 'verifyQuestions'])->name('password.security.verifyAnswer');
+
+Route::get('/reset-password/{users}', [RecoveryController::class, 'showResetForm'])
+    ->name('password.reset.form')
+    ->middleware('signed');
+
+// Ruta para procesar el cambio
+Route::post('/update-password', [RecoveryController::class, 'updatePassword'])
+    ->name('password.secure.update');
+
+Route::middleware(['auth', 'autorizacion'])->group(function () {
 
     Route::prefix('Informes')->group(function () {
 
-     Route::get('/', [InformesController::class, 'index'])->name('Informes.index');
+        Route::get('/', [InformesController::class, 'index'])->name('Informes.index');
 
         // Rutas para las vistas de informes específicos (HTML/PDF)
         Route::get('/diario', [InformesController::class, 'InformeDiario'])->name('Informes.Informes');
@@ -89,8 +115,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/backup/database', [RespaldoController::class, 'backup'])
-    ->middleware('auth')
-    ->name('backup.database');
+        ->middleware('auth')
+        ->name('backup.database');
 
 
     //notificaciones
@@ -103,56 +129,62 @@ Route::middleware('auth')->group(function () {
         auth()->user()->unreadNotifications->markAsRead();
         return back();
     })->name('notificaciones.eliminarTodas');
+
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->middleware('auth');
+
+
+    //inventario !!!!cambiar nombre!!!!
+    Route::get('/panel_de_control/Logistica', [Crud_nventario::class, 'VistaInventario'])->middleware('auth');
+    Route::put('/panel_de_control/Logistica/salidas/{id}', [Crud_nventario::class, 'update'])->name('salidas.update');
+    //******************************************************************************************************** */
+
+
+
+    Route::get('Movimientos/Entrada_Inventario', function () {
+        return view('Entrada_Inventario');
+    })->Middleware('auth');
+
+    Route::get('movimientos', [Crud_nventario::class, 'index'])->name('movimientos.index');
+    Route::post('materiales', [Crud_Materiales::class, 'PostMaterial'])->name('materiales.create');
+    Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inventario.index');
+    Route::delete('inventario/{id}', [Crud_nventario::class, 'destroy'])->name('inventarios.destroy');
+
+    Route::post('almacenes', [Crud_Almacen::class, 'PostAlmacen'])->name('Almacen.create');
+
+
+
+    Route::post('/movimientos/tabla/Ingreso', [Crud_Movimientos::class, 'PostMovimientoIngreso'])->name('movimientos.ingreso');
+    // Ruta para actualizar (Método PUT)
+    Route::put('/movimientos/{movimiento}', [Crud_Movimientos::class, 'update'])->name('movimientos.update');
+    // Ruta para eliminar (Soft Delete, Método DELETE)
+    Route::delete('/movimientos/{movimiento}', [Crud_Movimientos::class, 'destroy'])->name('movimientos.destroy');
+
+
+    Route::get('Perfil', [AuthController::class, 'InformacionUser'])->name('datos.usuario');
+
+    Route::get('/panel_de_control', [DashboardController::class, 'index'])->middleware('auth');
+    Route::get('/dashboard/movimientos-periodo', [DashboardController::class, 'getMovimientosPorPeriodo'])->middleware('auth');
+
+
+    Route::get('/Movimientos/tabla', [Crud_Movimientos::class, 'Movimientos'])->middleware('auth');
+    Route::post('/Movimientos/tabla/salida', [Crud_Movimientos::class, 'MovimientoSalida'])->name('movimientos.salida');
+    Route::post('/Movimientos/tabla/salida2', [Crud_Movimientos::class, 'MovimientoSalida2'])->name('movimientos.salida2');
+
+    Route::get('dashboard', [AuthController::class, 'dashboard']);
 });
 
 
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth');
-
-
-//inventario !!!!cambiar nombre!!!!
-Route::get('/panel_de_control/Logistica', [Crud_nventario::class, 'VistaInventario'])->middleware('auth');
-Route::put('/panel_de_control/Logistica/salidas/{id}', [Crud_nventario::class, 'update'])->name('salidas.update');
-//******************************************************************************************************** */
-
-
-
-Route::get('Movimientos/Entrada_Inventario', function () {
-    return view('Entrada_Inventario');
-})->Middleware('auth');
-
-Route::get('movimientos', [Crud_nventario::class, 'index'])->name('movimientos.index');
-Route::post('materiales', [Crud_Materiales::class, 'PostMaterial'])->name('materiales.create');
-Route::get('inventario', [Crud_nventario::class, 'PostInventario'])->name('inventario.index');
-Route::delete('inventario/{id}', [Crud_nventario::class, 'destroy'])->name('inventarios.destroy');
-
-Route::post('almacenes', [Crud_Almacen::class, 'PostAlmacen'])->name('Almacen.create');
-
-
-
-Route::post('/movimientos/tabla/Ingreso', [Crud_Movimientos::class, 'PostMovimientoIngreso'])->name('movimientos.ingreso');
-// Ruta para actualizar (Método PUT)
-Route::put('/movimientos/{movimiento}', [Crud_Movimientos::class, 'update'])->name('movimientos.update');
-// Ruta para eliminar (Soft Delete, Método DELETE)
-Route::delete('/movimientos/{movimiento}', [Crud_Movimientos::class, 'destroy'])->name('movimientos.destroy');
-
-
-Route::get('Perfil', [AuthController::class, 'InformacionUser'])->name('datos.usuario');
-
-Route::get('/panel_de_control', [DashboardController::class, 'index'])->middleware('auth');
-Route::get('/dashboard/movimientos-periodo', [DashboardController::class, 'getMovimientosPorPeriodo'])->middleware('auth');
-
-
-Route::get('/Movimientos/tabla', [Crud_Movimientos::class, 'Movimientos'])->middleware('auth');
-Route::post('/Movimientos/tabla/salida', [Crud_Movimientos::class, 'MovimientoSalida'])->name('movimientos.salida');
-Route::post('/Movimientos/tabla/salida2', [Crud_Movimientos::class, 'MovimientoSalida2'])->name('movimientos.salida2');
+// Rutas de recuperación (Fuera del middleware auth)
+Route::get('/recuperar-password', [ResetSecurityController::class, 'showEmailForm'])->name('password.security.index');
+Route::post('/recuperar-password/verificar-email', [ResetSecurityController::class, 'verifyEmail'])->name('password.security.verifyEmail');
+Route::post('/recuperar-password/verificar-respuesta', [ResetSecurityController::class, 'verifyAnswer'])->name('password.security.verifyAnswer');
+Route::post('/recuperar-password/reset', [ResetSecurityController::class, 'resetPassword'])->name('password.security.reset');
 
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post');
 Route::get('registration', [AuthController::class, 'registration'])->name('register');
 Route::post('post-registration', [AuthController::class, 'postRegistration'])->name('register.post');
-Route::get('dashboard', [AuthController::class, 'dashboard']);
 Route::get('/dashboard/movimientos', [DashboardController::class, 'getMovimientosAjax'])->name('dashboard.movimientos');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');

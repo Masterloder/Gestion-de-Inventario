@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -27,6 +28,9 @@ class User extends Authenticatable
         'rol',
         'email',
         'password',
+        'autorizacion',
+        'security_questions',
+        'configuracion_seguridad_completa',
     ];
 
     public function movimientos()
@@ -55,5 +59,16 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+
+    public function securityQuestions()
+    {
+        return $this->belongsToMany(
+            SecurityQuestion::class,    // El modelo de las preguntas
+            'user_security_answers',    // Tu tabla pivote
+            'user_id',                  // Llave foránea de esta tabla en la pivote
+            'question_id'               // Llave foránea del otro modelo en la pivote
+        )->withPivot('answer');         // Para poder acceder a la respuesta después
     }
 }

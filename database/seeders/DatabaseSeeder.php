@@ -20,13 +20,15 @@ class DatabaseSeeder extends Seeder
         $user->email = 'test@gmail.com';
         $user->rol = 'Administrador';
         $user->autorizacion = true;
+        $user->configuracion_seguridad_completa = TRUE;
         $user->password = bcrypt('domxfQ7c');
         $user->save();
 
         // 1. Catálogos base (Sin dependencias)
         $this->call([
             Categorias::class,
-            UnidadesMedicion::class
+            UnidadesMedicion::class,
+            SecurityQuestionsSeeder::class
         ]);
 
         for ($i = 0; $i < 2; $i++) {

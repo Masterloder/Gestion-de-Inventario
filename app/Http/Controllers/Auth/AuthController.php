@@ -54,7 +54,7 @@ class AuthController extends Controller
                 ->withSuccess('tu cuenta ha sido autenticada');
         }
 
-        return redirect("Inicio_de_sesion")->withError('ohh! credenciales invalidas');
+        return redirect("/Inicio_de_sesion")->with('error', 'No tienes permiso para acceder aquí.');
     }
 
     public function postRegistration(Request $request): RedirectResponse
@@ -70,6 +70,7 @@ class AuthController extends Controller
 
         // 3. Validación
         $request->validate([
+            'name'      => 'Operador de Almacén',
             'firstname' => 'required|string|max:30',
             'lastname'  => 'required|string|max:30',
             'email'     => 'required|email|unique:users,email',
@@ -90,12 +91,10 @@ class AuthController extends Controller
 
         // 4. Creación de usuario
         $data = $request->all();
-        $user = $this->create($data);
-
-        Auth::login($user);
+        $this->create($data);
 
         // 5. Redirección final
-        return redirect("dashboard")->with('success', '¡Genial! Has iniciado sesión correctamente');
+        return redirect("/Inicio_de_sesion")->withsuccess('¡Genial! Has Creado un Usuario correctamente');
     }
 
     public function dashboard()
@@ -110,7 +109,8 @@ class AuthController extends Controller
     public function create(array $data)
     {
         return User::create([
-            'name' => $data['firstname'],
+            'name' => 'Operador de Almacén',
+            'firstname' => $data['firstname'],
             'lastname' => $data['lastname'],
             'email' => $data['email'],
             'password' => Hash::make($data['password'])
@@ -125,4 +125,18 @@ class AuthController extends Controller
 
         return redirect('/Inicio_de_sesion');
     }
+
+    public function updatePassword(Request $request)
+{
+    $request->validate([
+        'password' => 'required|min:8',
+        'user_id' => 'required|exists:users,id'
+    ]);
+
+    $user = User::find($request->user_id);
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    return redirect()->route('login')->with('success', 'Contraseña actualizada.');
+}
 }
