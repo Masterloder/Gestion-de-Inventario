@@ -52,6 +52,40 @@
             width: 80%;
             opacity: 0.3; /* Efecto de fondo */
         }
+        /* Lado del Collage (Azul) */
+        .collage-section {
+            flex: 1;
+            /* Ocupa el 50% */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        .brand-logo {
+            width: 120px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.2));
+        }
+        /* Cuadrícula de fotos para el collage */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 80%;
+            max-width: 500px;
+        }
+        
+
+        .photo {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            aspect-ratio: 1 / 1;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
 
         .collage-item {
             background: rgba(255, 255, 255, 0.2);
@@ -59,6 +93,13 @@
             border-radius: 20px;
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Esto hace que la foto llene el cuadro sin deformarse */
+            display: block;
         }
 
         .floating-logo {
@@ -154,14 +195,18 @@
         </section>
 
         <section class="right-section">
-            <img src="{{ asset('/public/images/Logos/logo_corvisucre.png') }}" alt="Logo Corvisucre" class="floating-logo">
-            
-            <div class="collage-container">
-                <div class="collage-item"></div>
-                <div class="collage-item"></div>
-                <div class="collage-item"></div>
-                <div class="collage-item"></div>
+            <div class="collage-section">
+            <div class="logo-container">
+                <img src="{{ asset(path: 'images/Logos/logo_corvisucre.png') }}" alt="Logo Empresa" class="brand-logo">
             </div>
+
+            <div class="photo-grid">
+                <div class="photo item-3"><img src="{{ asset('images/collage/imagen3.png') }}" alt="Obra 3"></div>
+                <div class="photo item-2"><img src="{{ asset('images/collage/imagen2.png') }}" alt="Obra 2"></div>
+                <div class="photo item-4"><img src="{{ asset('images/collage/imagen4.png') }}" alt="Obra 4"></div>
+                <div class="photo item-1"><img src="{{ asset('images/collage/imagen1.png') }}" alt="Obra 1"></div>
+            </div>
+        </div>
         </section>
     </div>
 

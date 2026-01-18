@@ -38,7 +38,7 @@
                     [
                         'title' => 'Respaldos y Restauración',
                         'desc'  => 'Administra datos de respaldo y restauración del sistema.',
-                        'link'  => '/backup/database',
+                        'link'  => '/Basedate/configuracion',
                         'icon'  => 'bi-save'
                     ],
                 ];
@@ -50,7 +50,7 @@
                         <div class="card h-100 shadow-sm border-0 hover-shadow transition">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex align-items-center mb-3">
-                                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
+                                    <div class="bg-primary bg-opacity-10 p-3 rounded me-">
                                         <i class="bi {{ $option['icon'] }} text-primary fs-4"></i>
                                     </div>
                                     <h5 class="card-title fw-bold mb-0 text-dark">{{ $option['title'] }}</h5>

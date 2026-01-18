@@ -25,6 +25,11 @@
             justify-content: center;
             padding: 40px;
         }
+        .brand-logo {
+            width: 120px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.2));
+        }
 
         /* Cuadrícula de fotos para el collage */
         .photo-grid {
@@ -34,6 +39,7 @@
             width: 80%;
             max-width: 500px;
         }
+        
 
         .photo {
             background-color: rgba(255, 255, 255, 0.2);
@@ -67,11 +73,7 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
-        .brand-logo {
-            width: 120px;
-            margin-bottom: 30px;
-            filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.2));
-        }
+        
 
         /* Clase que aplicaremos al input cuando falle */
         .input-error {
@@ -143,6 +145,14 @@
             animation: timer 10s linear forwards;
         }
 
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Esto hace que la foto llene el cuadro sin deformarse */
+            display: block;
+        }
+
         @keyframes timer {
             from {
                 width: 100%;
@@ -188,10 +198,10 @@
             </div>
 
             <div class="photo-grid">
-                <div class="photo item-1"></div>
-                <div class="photo item-2"></div>
-                <div class="photo item-3"></div>
-                <div class="photo item-4"></div>
+                <div class="photo item-1"><img src="{{ asset('images/collage/imagen1.png') }}" alt="Obra 1"></div>
+                <div class="photo item-2"><img src="{{ asset('images/collage/imagen2.png') }}" alt="Obra 2"></div>
+                <div class="photo item-3"><img src="{{ asset('images/collage/imagen3.png') }}" alt="Obra 3"></div>
+                <div class="photo item-4"><img src="{{ asset('images/collage/imagen4.png') }}" alt="Obra 4"></div>
             </div>
         </div>
 
@@ -206,7 +216,7 @@
                     @csrf
                     <div class="form-group">
                         <div class="input-wrapper">
-                            <input type="email" id="email" name="email" required maxlength="70" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9]{2,}$" autocomplete="none"   >
+                            <input type="email" id="email" name="email" required maxlength="70" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9]{2,}$" autocomplete="none">
                             <label for="email">Dirección de Correo Electrónico</label>
                             <span class="focus-border"></span>
                         </div>
@@ -215,7 +225,7 @@
 
                     <div class="form-group">
                         <div class="input-wrapper">
-                            <input type="password" id="password" name="password" required minlength="8" maxlength="20"  >
+                            <input type="password" id="password" name="password" required minlength="8" maxlength="20">
                             <label for="password">Contraseña</label>
                             <span class="focus-border"></span>
                         </div>
@@ -230,7 +240,7 @@
                                 Recuerdame
                             </span>
                         </label>
-                       <a href="{{ route('password.request') }}" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                        <a href="{{ route('password.request') }}" class="forgot-password">¿Olvidaste tu contraseña?</a>
                     </div>
 
                     <button type="submit" class="login-btn btn">

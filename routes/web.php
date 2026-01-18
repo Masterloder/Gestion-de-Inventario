@@ -113,10 +113,29 @@ Route::middleware(['auth', 'autorizacion'])->group(function () {
 
         return response()->json(['status' => 'ok']);
     });
+    Route::prefix('/Basedate')->group(function () {
 
-    Route::get('/backup/database', [RespaldoController::class, 'backup'])
-        ->middleware('auth')
-        ->name('backup.database');
+        Route::get('/', [RespaldoController::class, 'listBackups'])->name('Basedata.index');
+
+        Route::get('/backup', [RespaldoController::class, 'downloadSql'])
+            ->middleware('auth')
+            ->name('backup.database');
+
+        Route::get('/Restore', [RespaldoController::class, 'restore'])->name('backup.restore');
+
+
+        // Listar backups y ver la vista
+        Route::get('/configuracion', [RespaldoController::class, 'index'])->name('backup.index');
+
+        // Restaurar desde un archivo específico de la lista
+        Route::post('/backup/restore-server/{filename}', [RespaldoController::class, 'restoreFromServer'])->name('backup.restoreFromServer');
+
+        // Si quieres descargar un archivo específico de la tabla
+        Route::get('/backup/download/{filename}', function ($filename) {
+            return Storage::disk('local')->download('backups/' . $filename);
+        })->name('backup.downloadFile');
+    });
+
 
 
     //notificaciones
