@@ -12,7 +12,7 @@
 
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                 <h2 class="fw-bold text-black">
-                    <i class="bi bi-gear-fill me-2"></i>&nbsp Configuración
+                    <i class="bi bi-gear-fill me-2"></i>&nbsp Respaldos y Restauración
                 </h2>
             </div>
 

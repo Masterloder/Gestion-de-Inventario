@@ -170,6 +170,7 @@
                     class="form-control"
                     placeholder="Escribe tu respuesta..."
                     required
+                    maxlength="35"
                     autocomplete="off">
             </div>
             @endforeach

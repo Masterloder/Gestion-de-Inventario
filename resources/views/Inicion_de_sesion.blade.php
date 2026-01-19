@@ -26,7 +26,7 @@
             padding: 40px;
         }
         .brand-logo {
-            width: 120px;
+            width: 220px;
             margin-bottom: 30px;
             filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.2));
         }
@@ -232,14 +232,7 @@
                         <span class="error-message" id="passwordError"></span>
                     </div>
 
-                    <div class="form-options">
-                        <label class="remember-wrapper">
-                            <input type="checkbox" id="remember" name="remember">
-                            <span class="checkbox-label">
-                                <span class="checkmark"></span>
-                                Recuerdame
-                            </span>
-                        </label>
+                    <div class="form-options " style="justify-content: center;">
                         <a href="{{ route('password.request') }}" class="forgot-password">¿Olvidaste tu contraseña?</a>
                     </div>
 

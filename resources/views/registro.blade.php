@@ -63,7 +63,7 @@
             padding: 40px;
         }
         .brand-logo {
-            width: 120px;
+            width: 220px;
             margin-bottom: 30px;
             filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.2));
         }

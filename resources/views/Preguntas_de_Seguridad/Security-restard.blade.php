@@ -129,7 +129,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                     <input type="password" id="password" name="password" 
-                           class="form-control" placeholder="Mínimo 8 caracteres" required>
+                           class="form-control" placeholder="Mínimo 8 caracteres" maxlength="14" required>
                 </div>
             </div>
 
@@ -138,7 +138,7 @@
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-check-double"></i></span>
                     <input type="password" id="confirm_password" 
-                           class="form-control" placeholder="Repite la contraseña" required>
+                           class="form-control" placeholder="Repite la contraseña" maxlength="14" required>
                 </div>
                 <small id="message" class="text-warning fw-semibold"></small>
             </div>

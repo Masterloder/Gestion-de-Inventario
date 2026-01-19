@@ -54,7 +54,7 @@ class AuthController extends Controller
                 ->withSuccess('tu cuenta ha sido autenticada');
         }
 
-        return redirect("/Inicio_de_sesion")->with('error', 'No tienes permiso para acceder aquí.');
+        return redirect("/Inicio_de_sesion")->with('error', 'credenciales incorrectas.');
     }
 
     public function postRegistration(Request $request): RedirectResponse

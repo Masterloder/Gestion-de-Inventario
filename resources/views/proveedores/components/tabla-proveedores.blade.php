@@ -6,7 +6,7 @@
         <table data-toggle="table" class="table table-responsive table-striped table-hover " data-search="true" data-sort-stable="true" data-pagination="true" id="tabla-proveedores">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-              <h2> <i class="bi bi-card-list"></i> &nbsp Materiales registrados</h2>
+              <h2> <i class="bi bi-card-list"></i> &nbsp Proveedores registrados</h2>
             </div>
             <!-- Botón para abrir el modal de registro de proveedor -->
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop3"> <i class="bi bi-plus-circle"></i> Registrar Proveedor</button>

@@ -15,13 +15,13 @@ class DatabaseSeeder extends Seeder
         // Crear usuario administrador
         $user = new User();
         $user->name = 'administrador';
-        $user->firstname = 'Name';
+        $user->firstname = 'administrador';
         $user->lastname = 'lastname';
-        $user->email = 'test@gmail.com';
+        $user->email = 'Corvisucre@gmail.com';
         $user->rol = 'Administrador';
         $user->autorizacion = true;
         $user->configuracion_seguridad_completa = TRUE;
-        $user->password = bcrypt('domxfQ7c');
+        $user->password = bcrypt('Corvisucre.1');
         $user->save();
 
         // 1. Catálogos base (Sin dependencias)

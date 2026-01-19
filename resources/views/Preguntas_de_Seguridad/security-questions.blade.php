@@ -43,6 +43,7 @@
                     name="answers[]"
                     class="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                     placeholder="Escribe tu respuesta aquí..."
+                    maxlength="30"
                     required>
     </div>
     @endfor

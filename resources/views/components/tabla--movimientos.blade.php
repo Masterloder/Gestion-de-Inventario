@@ -6,7 +6,7 @@
              <div class="table-responsive mt-5">
                 <div class="d-flex justify-content-between align-items-center mb-4" >
                     <div>
-                        <h2> <i class="bi bi-truck"></i> &nbsp Movimientos</h2>
+                        <h2> <i class="bi bi-truck"></i> &nbsp Historial de Movimientos</h2>
                     </div>
                     
                     <div class="btn-group ml-auto " role="group" aria-label="Basic example">

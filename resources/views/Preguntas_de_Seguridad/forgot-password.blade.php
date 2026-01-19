@@ -23,7 +23,7 @@
         
         <form action="{{ route('password.recovery.checkEmail') }}" method="POST">
             @csrf
-            <input type="email" name="email" class="form-control" placeholder="ejemplo@correo.com" required>
+            <input type="email" name="email" class="form-control" placeholder="ejemplo@correo.com" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9]{2,}$" maxlength="35" required>
             <button type="submit" class="btn-recovery">Continuar</button>
         </form>
         
