@@ -134,41 +134,64 @@
                 </div>
                 <!-- Modal Editar Proveedor -->
                 <div class="modal fade" id="editarProveedorModal{{ $proveedor->id }}" tabindex="-1" aria-labelledby="editarProveedorLabel{{ $proveedor->id }}" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <form action="{{ route('proveedores.update', $proveedor->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-header bg-warning">
-                          <h5 class="modal-title" id="editarProveedorLabel{{ $proveedor->id }}">Editar Proveedor</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                          <div class="mb-3">
-                            <label for="nombre{{ $proveedor->id }}" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="nombre{{ $proveedor->id }}" name="nombre" value="{{ $proveedor->nombre }}" required>
-                          </div>
-                          <div class="mb-3">
-                            <label for="correo{{ $proveedor->id }}" class="form-label">Correo</label>
-                            <input type="email" class="form-control" id="correo{{ $proveedor->id }}" name="correo" value="{{ $proveedor->correo }}" required>
-                          </div>
-                          <div class="mb-3">
-                            <label for="telefono{{ $proveedor->id }}" class="form-label">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono{{ $proveedor->id }}" name="telefono" value="{{ $proveedor->telefono }}" required>
-                          </div>
-                          <div class="mb-3">
-                            <label for="direccion{{ $proveedor->id }}" class="form-label">Dirección</label>
-                            <input type="text" class="form-control" id="direccion{{ $proveedor->id }}" name="direccion" value="{{ $proveedor->direccion }}" required>
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="submit" class="btn btn-warning">Guardar Cambios</button>
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form action="{{ route('proveedores.update', $proveedor->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="editarProveedorLabel{{ $proveedor->id }}">Editar Proveedor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nombre{{ $proveedor->id }}" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre{{ $proveedor->id }}" name="nombre" value="{{ $proveedor->nombre }}" maxlength="25" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="correo{{ $proveedor->id }}" class="form-label">Correo</label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="correo{{ $proveedor->id }}" 
+                               name="correo" 
+                               value="{{ $proveedor->correo }}" 
+                               maxlength="50" 
+                               placeholder="nombre@ejemplo.com"
+                               required>
+                        <div class="form-text text-muted">Asegúrate de incluir el "@" y el dominio.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="telefono{{ $proveedor->id }}" class="form-label">Teléfono</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="telefono{{ $proveedor->id }}" 
+                               name="telefono" 
+                               value="{{ $proveedor->telefono }}" 
+                               maxlength="25" 
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                               placeholder="Solo números"
+                               required>
+                        <div class="form-text text-muted">No se permiten letras ni caracteres especiales.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="direccion{{ $proveedor->id }}" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion{{ $proveedor->id }}" name="direccion" value="{{ $proveedor->direccion }}" maxlength="25" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
                 <!-- Modal Soft Delete -->
                 <div class="modal fade" id="eliminarProveedorModal{{ $proveedor->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="eliminarProveedorLabel{{ $proveedor->id }}" aria-hidden="true">
@@ -202,8 +225,6 @@
                     </div>
                   </div>
                 </div>
-
-
               </td>
             </tr>
             @endforeach

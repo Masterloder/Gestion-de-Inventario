@@ -74,13 +74,14 @@
         <div class="form-text" id="ayuda_stock"></div>
     </div>
 
-    <div class="col-12 text-end">
+    
         <button type="submit" class="btn btn-primary" id="btnSubmit">Registrar Salida</button>
-    </div>
+    
 </form>
 
 <script>
     /**
+     * 
      * Bloquea cualquier carácter que no sea número o punto
      */
     function soloNumeros(evt) {

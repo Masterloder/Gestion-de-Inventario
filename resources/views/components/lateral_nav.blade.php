@@ -77,7 +77,6 @@
                     </span>
                     @endif
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="NotificacionesBarra" style="width: 320px; max-height: 450px; overflow-y: auto;">
                     <li class="dropdown-header border-bottom d-flex justify-content-between align-items-center pb-2">
                         <span class="fw-bold">Notificaciones</span>

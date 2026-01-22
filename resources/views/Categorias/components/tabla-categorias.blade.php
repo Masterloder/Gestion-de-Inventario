@@ -61,7 +61,7 @@
 
                         <!-- Modal para agregar nueva categoría específica -->
                         <div class="modal fade" id="addcategoriaEspecificaModal" tabindex="-1" aria-labelledby="addcategoriaEspecificaModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
+                            <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header bg-success text-white">
                                         <h5 class="modal-title" id="addcategoriaEspecificaModalLabel">

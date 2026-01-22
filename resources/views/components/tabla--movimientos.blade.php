@@ -1,21 +1,21 @@
  <div class="container-fluid">
-    
+
      <div class="row">
          @include('components.siderbar_panelcontrol')
          <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
              <div class="table-responsive mt-5">
-                <div class="d-flex justify-content-between align-items-center mb-4" >
-                    <div>
-                        <h2> <i class="bi bi-truck"></i> &nbsp Historial de Movimientos</h2>
-                    </div>
-                    
-                    <div class="btn-group ml-auto " role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> <i class="bi bi-clipboard-plus"></i>Ingreso de Materiales</button>
-                        <button type="button" class="btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"> <i class="bi bi-clipboard-plus"></i>Salida de Materiales</button>
-                        
-                    </div>
-                </div>
-                    
+                 <div class="d-flex justify-content-between align-items-center mb-4">
+                     <div>
+                         <h2> <i class="bi bi-truck"></i> &nbsp Historial de Movimientos</h2>
+                     </div>
+
+                     <div class="btn-group ml-auto " role="group" aria-label="Basic example">
+                         <button type="button" class="btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop1"> <i class="bi bi-clipboard-plus"></i>Ingreso de Materiales</button>
+                         <button type="button" class="btn btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop2"> <i class="bi bi-clipboard-plus"></i>Salida de Materiales</button>
+
+                     </div>
+                 </div>
+
                  <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                      <div class="modal-dialog modal-dialog-centered modal-xl">
                          <div class="modal-content">
@@ -33,7 +33,7 @@
                      <div class="modal-dialog modal-dialog-centered">
                          <div class="modal-content">
                              <div class="modal-header">
-                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Ingreso de Materiales </h1>
+                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Salida de Material </h1>
                                  <button type="button" class="btn-close  " data-bs-dismiss="modal" aria-label="Close"></button>
                              </div>
                              <div class="modal-body">
@@ -61,14 +61,28 @@
                          <tr>
                              {{-- Colspan debe ser 8 para abarcar todas las columnas --}}
                              <td colspan="8" class="text-center py-4">
-                                <i class="bi bi-info-circle"></i> No hay movimientos registrados.
-                            </td>
+                                 <i class="bi bi-info-circle"></i> No hay movimientos registrados.
+                             </td>
                          </tr>
                          @else
                          @foreach ($movimientos as $movimiento)
                          <tr>
                              {{-- 1. Tipo de Movimiento --}}
-                             <td>{{ $movimiento->tipo_movimiento ?? 'N/A' }}</td>
+                             <td class="text-center">
+                                 @if($movimiento->tipo_movimiento == 'Entrada' || $movimiento->tipo_movimiento == 'Ingreso')
+                                 <span class="badge bg-success text-white p-2">
+                                     <i class="bi bi-arrow-down-left-circle"></i> Entrada
+                                 </span>
+                                 @elseif($movimiento->tipo_movimiento == 'Salida')
+                                 <span class="badge bg-danger text-white p-2">
+                                     <i class="bi bi-arrow-up-right-circle"></i> Salida
+                                 </span>
+                                 @else
+                                 <span class="badge bg-secondary text-white p-2">
+                                     {{ $movimiento->tipo_movimiento ?? 'N/A' }}
+                                 </span>
+                                 @endif
+                             </td>
 
                              {{-- 2. Fecha de Operación (formatos recomendados) --}}
                              <td>{{ $movimiento->fecha_operacion ?? 'N/A' }}</td>
@@ -110,13 +124,13 @@
                                      class="btn btn-sm btn-danger"
                                      title="Eliminar Movimiento"
                                      data-bs-toggle="modal"
-                                     data-bs-target="#eliminarModal{{ $movimiento->id }}">
+                                     data-bs-target="#eliminar{{ $movimiento->id }}">
                                      <i class="bi bi-trash"></i>
                                  </button>
                              </td>
                          </tr>
                          {{-- Modal Detalle --}}
-                         <div class="modal fade" id="detalleModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"   aria-labelledby="detalleModalLabel{{ $movimiento->id }}" aria-hidden="true">
+                         <div class="modal fade" id="detalleModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="detalleModalLabel{{ $movimiento->id }}" aria-hidden="true">
                              <div class="modal-dialog modal-dialog-centered ">
                                  <div class="modal-content">
                                      <div class="modal-header">
@@ -145,120 +159,119 @@
                                  </div>
                              </div>
                          </div>
-                            {{-- Modal Editar --}}
-                        <div class="modal fade" id="editarModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"  aria-labelledby="editarModalLabel{{ $movimiento->id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editarModalLabel{{ $movimiento->id }}">Editar Movimiento #{{ $movimiento->id }}</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form action="{{ route('movimientos.update', $movimiento->id) }}" method="POST" onsubmit="return confirmarEdicion({{ $movimiento->id }}, {{ $movimiento->cantidad }}, {{ $movimiento->materiales->stock ?? 0 }})">
-                                        @csrf
-                                        @method('PUT')
-                                        <div class="modal-body row">
+                         {{-- Modal Editar --}}
+                         <div class="modal fade" id="editarModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editarModalLabel{{ $movimiento->id }}" aria-hidden="true">
+                             <div class="modal-dialog modal-dialog-centered modal-lg">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <h5 class="modal-title" id="editarModalLabel{{ $movimiento->id }}">Editar Movimiento #{{ $movimiento->id }}</h5>
+                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                     </div>
+                                     <form action="{{ route('movimientos.update', $movimiento->id) }}" method="POST" onsubmit="return confirmarEdicion({{ $movimiento->id }}, {{ $movimiento->cantidad }}, {{ $movimiento->materiales->stock ?? 0 }})">
+                                         @csrf
+                                         @method('PUT')
+                                         <div class="modal-body row">
 
-                                        <div class="mb-3 col-md-6">
-                                            <label for="TipoMovimiento_{{ $movimiento->id }}" class="form-label" >Tipo de Movimiento</label>
-                                            <input type="text"
-                                            id="TipoMovimiento_{{ $movimiento->id }}"
-                                            class="form-control"
-                                            value="{{ $movimiento->tipo_movimiento }}"
-                                            readonly
-                                            >
+                                             <div class="mb-3 col-md-6">
+                                                 <label for="TipoMovimiento_{{ $movimiento->id }}" class="form-label">Tipo de Movimiento</label>
+                                                 <input type="text"
+                                                     id="TipoMovimiento_{{ $movimiento->id }}"
+                                                     class="form-control"
+                                                     value="{{ $movimiento->tipo_movimiento }}"
+                                                     readonly>
 
-                                        </div>
+                                             </div>
 
-                                            <div class="mb-3 col-md-6">
-                                                <label for="id_material_{{ $movimiento->id }}" class="form-label">Material</label>
-                                                <input type="text"
-                                                    id="id_material_{{ $movimiento->id }}"
-                                                    class="form-control"
-                                                    value="{{ $movimiento->materiales->nombre ?? 'N/A' }}{{ !empty($movimiento->materiales->unidadMedida->simbolo) ? ' (' . $movimiento->materiales->unidadMedida->simbolo . ')' : '' }}{{ !empty($movimiento->materiales->categoria->nombre_categoria) ? ' - ' . $movimiento->materiales->categoria->nombre_categoria : '' }}"
-                                                    readonly>
-                                                <input type="hidden" name="id_material" value="{{ $movimiento->id_material }}">
-                                            </div>
+                                             <div class="mb-3 col-md-6">
+                                                 <label for="id_material_{{ $movimiento->id }}" class="form-label">Material</label>
+                                                 <input type="text"
+                                                     id="id_material_{{ $movimiento->id }}"
+                                                     class="form-control"
+                                                     value="{{ $movimiento->materiales->nombre ?? 'N/A' }}{{ !empty($movimiento->materiales->unidadMedida->simbolo) ? ' (' . $movimiento->materiales->unidadMedida->simbolo . ')' : '' }}{{ !empty($movimiento->materiales->categoria->nombre_categoria) ? ' - ' . $movimiento->materiales->categoria->nombre_categoria : '' }}"
+                                                     readonly>
+                                                 <input type="hidden" name="id_material" value="{{ $movimiento->id_material }}">
+                                             </div>
 
-                                            <div class="mb-3 col-md-6">
-                                                <label for="id_trabajador_{{ $movimiento->id }}" class="form-label">Trabajador</label>
-                                                <select name="id_usuario" id="id_trabajador_{{ $movimiento->id }}" class="form-select" required>
-                                                    <option value="">-- Selecciona Trabajador --</option>
-                                                    @foreach ($trabajadores as $trabajador)
-                                                    <option
-                                                        value="{{ $trabajador->id }}"
-                                                        {{ $movimiento->id_usuario == $trabajador->id ? 'selected' : '' }}>
-                                                        {{ $trabajador->name }}
-                                                    </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                             <div class="mb-3 col-md-6">
+                                                 <label for="id_trabajador_{{ $movimiento->id }}" class="form-label">Trabajador</label>
+                                                 <select name="id_usuario" id="id_trabajador_{{ $movimiento->id }}" class="form-select" required>
+                                                     <option value="">-- Selecciona Trabajador --</option>
+                                                     @foreach ($trabajadores as $trabajador)
+                                                     <option
+                                                         value="{{ $trabajador->id }}"
+                                                         {{ $movimiento->id_usuario == $trabajador->id ? 'selected' : '' }}>
+                                                         {{ $trabajador->name }}
+                                                     </option>
+                                                     @endforeach
+                                                 </select>
+                                             </div>
 
-                                            <div class="mb-3 col-md-6">
-                                                <label for="cantidad_{{ $movimiento->id }}" class="form-label">Cantidad</label>
-                                                <input type="number"
-                                                    name="cantidad"
-                                                    id="cantidad_{{ $movimiento->id }}"
-                                                    class="form-control"
-                                                    value="{{ $movimiento->cantidad }}"
-                                                    required min="1">
-                                            </div>
-                                            <div class="mb-3 col-md-6">
-                                                <label for="numero_referencia_{{ $movimiento->id }}" class="form-label">Nº de Referencia</label>
-                                                <input type="text"
-                                                    name="numero_referencia"
-                                                    id="numero_referencia_{{ $movimiento->id }}"
-                                                    class="form-control"
-                                                    value="{{ $movimiento->numero_referencia }}"
-                                                    required>
-                                            <div class="mb-3 col-md-6">
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
-                                        </div>
-                                    </form>
-                                    <script>
-                                    function confirmarEdicion(id, cantidadAnterior, stockDisponible) {
-                                        if (!validarCantidad(id, cantidadAnterior, stockDisponible)) {
-                                            return false;
-                                        }
-                                        return confirm('¿Está seguro de realizar esta acción?\nEl cambio será permanente y no podrá ser recuperado.');
-                                    }
-                                    </script>
-                                    <script>
-                                    function validarCantidad(id, cantidadAnterior, stockDisponible) {
-                                        var inputCantidad = document.getElementById('cantidad_' + id);
-                                        var nuevaCantidad = parseInt(inputCantidad.value);
-                                        var tipoMovimiento = '{{ $movimiento->tipo_movimiento }}';
+                                             <div class="mb-3 col-md-6">
+                                                 <label for="cantidad_{{ $movimiento->id }}" class="form-label">Cantidad</label>
+                                                 <input type="number"
+                                                     name="cantidad"
+                                                     id="cantidad_{{ $movimiento->id }}"
+                                                     class="form-control"
+                                                     value="{{ $movimiento->cantidad }}"
+                                                     required min="1">
+                                             </div>
+                                             <div class="mb-3 col-md-6">
+                                                 <label for="numero_referencia_{{ $movimiento->id }}" class="form-label">Nº de Referencia</label>
+                                                 <input type="text"
+                                                     name="numero_referencia"
+                                                     id="numero_referencia_{{ $movimiento->id }}"
+                                                     class="form-control"
+                                                     value="{{ $movimiento->numero_referencia }}"
+                                                     readonly
+                                                     required>
+                                             </div>
+                                             <div class="modal-footer">
+                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                 <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                                             </div>
+                                         </div>
+                                     </form>
+                                     <script>
+                                         function confirmarEdicion(id, cantidadAnterior, stockDisponible) {
+                                             if (!validarCantidad(id, cantidadAnterior, stockDisponible)) {
+                                                 return false;
+                                             }
+                                             return confirm('¿Está seguro de realizar esta acción?\nEl cambio será permanente y no podrá ser recuperado.');
+                                         }
+                                     </script>
+                                     <script>
+                                         function validarCantidad(id, cantidadAnterior, stockDisponible) {
+                                             var inputCantidad = document.getElementById('cantidad_' + id);
+                                             var nuevaCantidad = parseInt(inputCantidad.value);
+                                             var tipoMovimiento = '{{ $movimiento->tipo_movimiento }}';
 
-                                        if (isNaN(nuevaCantidad) || nuevaCantidad < 1) {
-                                            alert('La cantidad debe ser mayor a 0.');
-                                            return false;
-                                        }
+                                             if (isNaN(nuevaCantidad) || nuevaCantidad < 1) {
+                                                 alert('La cantidad debe ser mayor a 0.');
+                                                 return false;
+                                             }
 
-                                        var diferencia = nuevaCantidad - cantidadAnterior;
+                                             var diferencia = nuevaCantidad - cantidadAnterior;
 
-                                        if (tipoMovimiento === 'Salida') {
-                                            // Si la nueva cantidad es mayor, se está intentando sacar más material
-                                            if (diferencia > 0) {
-                                                if (diferencia > stockDisponible) {
-                                                    alert('No puedes retirar más material del disponible en inventario.');
-                                                    return false;
-                                                }
-                                            }
-                                        }
-                                        // Para ingreso, no hay restricción de stock, pero podrías agregar validaciones si lo deseas
+                                             if (tipoMovimiento === 'Salida') {
+                                                 // Si la nueva cantidad es mayor, se está intentando sacar más material
+                                                 if (diferencia > 0) {
+                                                     if (diferencia > stockDisponible) {
+                                                         alert('No puedes retirar más material del disponible en inventario.');
+                                                         return false;
+                                                     }
+                                                 }
+                                             }
+                                             // Para ingreso, no hay restricción de stock, pero podrías agregar validaciones si lo deseas
 
-                                        // El cálculo de suma/resta al stock se debe hacer en el backend al actualizar el movimiento
-                                        return true;
-                                    }
-                                    </script>
+                                             // El cálculo de suma/resta al stock se debe hacer en el backend al actualizar el movimiento
+                                             return true;
+                                         }
+                                     </script>
                                  </div>
                              </div>
                          </div>
-                            {{-- Modal Eliminar --}}
-                         <div class="modal fade" id="eliminarModal{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"   aria-labelledby="eliminarModalLabel{{ $movimiento->id }}" aria-hidden="true">
+                         {{-- Modal Eliminar --}}
+                         <div class="modal fade" id="eliminar{{ $movimiento->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="eliminarModalLabel{{ $movimiento->id }}" aria-hidden="true">
                              <div class="modal-dialog modal-dialog-centered">
                                  <div class="modal-content">
                                      <div class="modal-header bg-danger text-white">
@@ -290,19 +303,18 @@
  </div>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
  <script src="https://unpkg.com/bootstrap-table@1.22.4/dist/bootstrap-table.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
  <script src="https://unpkg.com/bootstrap-table@1.22.4/dist/locale/bootstrap-table-es-ES.min.js"></script>
+ <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
  <script
      src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.js"
      integrity="sha384-eI7PSr3L1XLISH8JdDII5YN/njoSsxfbrkCTnJrzXt+ENP5MOVBxD+l6sEG4zoLp"
      crossorigin="anonymous"
      class="astro-vvvwv3sm"></script>
- <script src="dashboard.js" class="astro-vvvwv3sm"></script>
  <script>
      document.addEventListener('DOMContentLoaded', function() {
-    // Si usas jQuery (asegúrate de haberlo cargado antes)
-    if (typeof $ !== 'undefined') {
-        $('#tabla-movimientos').bootstrapTable(); 
-    }
-});
+         // Si usas jQuery (asegúrate de haberlo cargado antes)
+         if (typeof $ !== 'undefined') {
+             $('#tabla-movimientos').bootstrapTable();
+         }
+     });
  </script>
