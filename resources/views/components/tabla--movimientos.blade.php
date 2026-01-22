@@ -111,22 +111,26 @@
                                      data-bs-target="#detalleModal{{ $movimiento->id }}">
                                      <i class="bi bi-eye"></i>
                                  </button>
+                                 @can('admin-only')
 
+                                 
                                  <button type="button"
-                                     class="btn btn-sm btn-warning"
-                                     title="Editar Movimiento"
-                                     data-bs-toggle="modal"
-                                     data-bs-target="#editarModal{{ $movimiento->id }}">
-                                     <i class="bi bi-pencil"></i>
-                                 </button>
+                                 class="btn btn-sm btn-warning"
+                                 title="Editar Movimiento"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#editarModal{{ $movimiento->id }}">
+                                 <i class="bi bi-pencil"></i>
+                                </button>
+                                
+                                <button type="button"
+                                class="btn btn-sm btn-danger"
+                                title="Eliminar Movimiento"
+                                data-bs-toggle="modal"
+                                data-bs-target="#eliminar{{ $movimiento->id }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            @endcan
 
-                                 <button type="button"
-                                     class="btn btn-sm btn-danger"
-                                     title="Eliminar Movimiento"
-                                     data-bs-toggle="modal"
-                                     data-bs-target="#eliminar{{ $movimiento->id }}">
-                                     <i class="bi bi-trash"></i>
-                                 </button>
                              </td>
                          </tr>
                          {{-- Modal Detalle --}}

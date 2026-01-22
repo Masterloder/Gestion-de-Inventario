@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\RateLimiter;
+use Str;
 
 class AuthController extends Controller
 {
@@ -38,35 +40,58 @@ class AuthController extends Controller
 
     public function postLogin(Request $request): RedirectResponse
     {
-
+        // 1. Normalizar el email
         $request->merge([
             'email' => strtolower($request->input('email'))
         ]);
 
+        // 2. Validar campos
         $request->validate([
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
+        // 3. Crear una llave única para el limitador (Email + IP)
+        $throttleKey = Str::transliterate(
+            Str::lower($request->input('email')) . '|' . $request->ip()
+        );
+
+        // 4. Verificar si ya excedió los intentos
+        if (RateLimiter::tooManyAttempts($throttleKey, 1)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+
+            return redirect("/Inicio_de_sesion")
+                ->with('error', "Demasiados intentos. Inténtalo de nuevo en $seconds segundos.");
+        }
+
         $credentials = $request->only('email', 'password');
+
+        // 5. Intentar autenticar
         if (Auth::attempt($credentials)) {
+            // Si tiene éxito, reiniciamos el contador de intentos
+            RateLimiter::clear($throttleKey);
+
             return redirect()->intended('/dashboard')
                 ->withSuccess('tu cuenta ha sido autenticada');
         }
 
-        return redirect("/Inicio_de_sesion")->with('error', 'credenciales incorrectas.');
+        // 6. Si falla la autenticación, aumentamos el contador de intentos
+        RateLimiter::hit($throttleKey, 120); // 60 segundos de bloqueo tras el límite
+
+        return redirect("/Inicio_de_sesion")
+            ->with('error', 'credenciales incorrectas.');
     }
 
     public function postRegistration(Request $request): RedirectResponse
     {
         // 1. Convertir email,nombre,apellido a minúsculas
         $request->merge([
-        'email'     => strtolower($request->input('email')),
-        'firstname' => ucfirst(strtolower($request->input('firstname'))),
-        'lastname'  => ucfirst(strtolower($request->input('lastname'))),
-    ]);
+            'email'     => strtolower($request->input('email')),
+            'firstname' => ucfirst(strtolower($request->input('firstname'))),
+            'lastname'  => ucfirst(strtolower($request->input('lastname'))),
+        ]);
 
-        
+
 
         // 3. Validación
         $request->validate([
@@ -127,16 +152,16 @@ class AuthController extends Controller
     }
 
     public function updatePassword(Request $request)
-{
-    $request->validate([
-        'password' => 'required|min:8',
-        'user_id' => 'required|exists:users,id'
-    ]);
+    {
+        $request->validate([
+            'password' => 'required|min:8',
+            'user_id' => 'required|exists:users,id'
+        ]);
 
-    $user = User::find($request->user_id);
-    $user->password = Hash::make($request->password);
-    $user->save();
+        $user = User::find($request->user_id);
+        $user->password = Hash::make($request->password);
+        $user->save();
 
-    return redirect()->route('login')->with('success', 'Contraseña actualizada.');
-}
+        return redirect()->route('login')->with('success', 'Contraseña actualizada.');
+    }
 }

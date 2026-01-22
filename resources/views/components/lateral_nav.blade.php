@@ -66,7 +66,7 @@
         </a>
 
         <div class="d-flex align-items-center ms-auto">
-
+            @can('admin-only')
             <div class="dropdown me-3">
                 <a class="nav-link position-relative" href="#" id="NotificacionesBarra" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-bell fs-5 text-white"></i>
@@ -77,6 +77,7 @@
                     </span>
                     @endif
                 </a>
+
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="NotificacionesBarra" style="width: 320px; max-height: 450px; overflow-y: auto;">
                     <li class="dropdown-header border-bottom d-flex justify-content-between align-items-center pb-2">
                         <span class="fw-bold">Notificaciones</span>
@@ -112,6 +113,7 @@
                     </div>
                 </ul>
             </div>
+            @endcan
 
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="UsuarioBarra" data-bs-toggle="dropdown" aria-expanded="false">
@@ -122,7 +124,10 @@
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow" aria-labelledby="UsuarioBarra">
+                    @can('admin-only')
                     <li><a class="dropdown-item" href="{{ url('/configuracion') }}"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+                    @endcan
+
                     <li><a class="dropdown-item" href="{{ url('/Perfil') }}"><i class="bi bi-person me-2"></i>Perfil</a></li>
                     <li>
                         <hr class="dropdown-divider" />

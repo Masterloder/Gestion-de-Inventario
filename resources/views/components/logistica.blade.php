@@ -57,7 +57,7 @@
 
 
 
-         <div class="modal fade" id="modalRegistrarSalida" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="modalRegistrarSalidaLabel" >
+         <div class="modal fade" id="modalRegistrarSalida" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true" aria-labelledby="modalRegistrarSalidaLabel">
            <div class="modal-dialog modal-dialog-centered modal-xl">
              <div class="modal-content">
                <div class="modal-header bg-primary text-white">
@@ -99,92 +99,95 @@
                <td>{{ $item->almacen->direccion ?? 'N/A' }}</td>
                <td>
                  {{-- ... Otros botones (Nuevo Material, Almacén, Proveedor) ... --}}
-
+                 
                  {{-- Botón para abrir el nuevo modal de salida --}}
                  <button type="button"
-                   class="btn btn-sm btn-info"
-                   data-bs-toggle="modal"
-                   data-bs-target="#modalRegistrarSalida"
-                   data-material-id="{{ $item->id_material }}"
-                   data-almacen-id="{{ $item->id_almacen }}"
-                   data-inventario-key="{{ $item->id_material }}-{{ $item->id_almacen }}"
-                   title="Registrar Salida">
-                   <i class="bi bi-truck"></i>
-                 </button>
-                <!-- Botón para abrir el modal de edición de salida -->
-                <button type="button"
-                  class="btn btn-sm btn-warning"
-                  data-bs-toggle="modal"
-                  data-bs-target="#modalEditarSalida{{ $item->id }}"
-                  data-inventario-id="{{ $item->id }}"
-                  title="Editar">
-                    <i class="bi bi-pencil"></i>
+                 class="btn btn-sm btn-info"
+                 data-bs-toggle="modal"
+                 data-bs-target="#modalRegistrarSalida"
+                 data-material-id="{{ $item->id_material }}"
+                 data-almacen-id="{{ $item->id_almacen }}"
+                 data-inventario-key="{{ $item->id_material }}-{{ $item->id_almacen }}"
+                 title="Registrar Salida">
+                 <i class="bi bi-truck"></i>
                 </button>
-
-                <!-- Modal para editar la salida -->
-                <div class="modal fade" id="modalEditarSalida{{ $item->id }}" tabindex="-1" aria-labelledby="modalEditarSalidaLabel{{ $item->id }}" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                      <div class="modal-header bg-primary text-white">
-                  <h5 class="modal-title" id="modalEditarSalidaLabel{{ $item->id }}">Editar Salida de Material</h5>
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <form action="{{ route('salidas.update', $item->id) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
-                  <div class="mb-3">
-                    <label class="form-label">Material</label>
-                    <input type="text" class="form-control" value="{{ $item->material->nombre ?? 'N/A' }}" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Descripción</label>
-                    <input type="text" class="form-control" value="{{ $item->material->descripcion ?? 'N/A' }}" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Unidad de Medida</label>
-                    <input type="text" class="form-control" value="{{ $item->material->unidadMedida->simbolo ?? '' }}" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Cantidad Actual</label>
-                    <input type="number" class="form-control" name="cantidad_actual" value="{{ $item->cantidad_actual }}" min="0" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Almacén</label>
-                    <select class="form-select" name="id_almacen" required>
-                      @foreach($almacenes as $almacen)
-                        <option value="{{ $almacen->id }}" {{ $item->id_almacen == $almacen->id ? 'selected' : '' }}>
-                          {{ $almacen->nombre }}
-                        </option>
-                      @endforeach
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Ubicación Física (opcional)</label>
-                    <input type="text" class="form-control" name="ubicacion_fisica" value="{{ $item->almacen->direccion ?? '' }}">
-                  </div>
-                  <div class="alert alert-warning mt-3" role="alert">
-                    <strong>Advertencia:</strong> Si acepta, los cambios se guardarán permanentemente y no podrán ser restaurados.
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                  <button type="submit" class="btn btn-primary"
-                    onclick="return confirm('¿Está seguro de que desea realizar estos cambios? Esta acción es irreversible.');">
-                    Guardar Cambios
-                  </button>
-                </div></form>
-                    </div>
-                  </div>
-                </div>
+                @can('admin-only')
+                 <!-- Botón para abrir el modal de edición de salida -->
                  <button type="button"
-                                     class="btn btn-sm btn-danger"
-                                     title="Eliminar inventario"
-                                     data-bs-toggle="modal"
-                                     data-bs-target="#eliminarModal{{ $item->id }}">
-                                     <i class="bi bi-trash"></i>
-                                 </button>
+                   class="btn btn-sm btn-warning"
+                   data-bs-toggle="modal"
+                   data-bs-target="#modalEditarSalida{{ $item->id }}"
+                   data-inventario-id="{{ $item->id }}"
+                   title="Editar">
+                   <i class="bi bi-pencil"></i>
+                 </button>
 
+
+                 <!-- Modal para editar la salida -->
+                 <div class="modal fade" id="modalEditarSalida{{ $item->id }}" tabindex="-1" aria-labelledby="modalEditarSalidaLabel{{ $item->id }}" aria-hidden="true">
+                   <div class="modal-dialog modal-dialog-centered">
+                     <div class="modal-content">
+                       <div class="modal-header bg-primary text-white">
+                         <h5 class="modal-title" id="modalEditarSalidaLabel{{ $item->id }}">Editar Salida de Material</h5>
+                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                       </div>
+                       <form action="{{ route('salidas.update', $item->id) }}" method="POST">
+                         @csrf
+                         @method('PUT')
+                         <div class="modal-body">
+                           <div class="mb-3">
+                             <label class="form-label">Material</label>
+                             <input type="text" class="form-control" value="{{ $item->material->nombre ?? 'N/A' }}" readonly>
+                           </div>
+                           <div class="mb-3">
+                             <label class="form-label">Descripción</label>
+                             <input type="text" class="form-control" value="{{ $item->material->descripcion ?? 'N/A' }}" readonly>
+                           </div>
+                           <div class="mb-3">
+                             <label class="form-label">Unidad de Medida</label>
+                             <input type="text" class="form-control" value="{{ $item->material->unidadMedida->simbolo ?? '' }}" readonly>
+                           </div>
+                           <div class="mb-3">
+                             <label class="form-label">Cantidad Actual</label>
+                             <input type="number" class="form-control" name="cantidad_actual" value="{{ $item->cantidad_actual }}" min="0" required>
+                           </div>
+                           <div class="mb-3">
+                             <label class="form-label">Almacén</label>
+                             <select class="form-select" name="id_almacen" required>
+                               @foreach($almacenes as $almacen)
+                               <option value="{{ $almacen->id }}" {{ $item->id_almacen == $almacen->id ? 'selected' : '' }}>
+                                 {{ $almacen->nombre }}
+                               </option>
+                               @endforeach
+                             </select>
+                           </div>
+                           <div class="mb-3">
+                             <label class="form-label">Ubicación Física (opcional)</label>
+                             <input type="text" class="form-control" name="ubicacion_fisica" value="{{ $item->almacen->direccion ?? '' }}">
+                           </div>
+                           <div class="alert alert-warning mt-3" role="alert">
+                             <strong>Advertencia:</strong> Si acepta, los cambios se guardarán permanentemente y no podrán ser restaurados.
+                           </div>
+                         </div>
+                         <div class="modal-footer">
+                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                           <button type="submit" class="btn btn-primary"
+                             onclick="return confirm('¿Está seguro de que desea realizar estos cambios? Esta acción es irreversible.');">
+                             Guardar Cambios
+                           </button>
+                         </div>
+                       </form>
+                     </div>
+                   </div>
+                 </div>
+                 <button type="button"
+                   class="btn btn-sm btn-danger"
+                   title="Eliminar inventario"
+                   data-bs-toggle="modal"
+                   data-bs-target="#eliminarModal{{ $item->id }}">
+                   <i class="bi bi-trash"></i>
+                 </button>
+@endcan
                  <div class="modal fade" id="eliminarModal{{ $item->id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ $item->id}}" aria-hidden="true">
                    <div class="modal-dialog modal-dialog-centered">
                      <div class="modal-content">

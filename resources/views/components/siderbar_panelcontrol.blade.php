@@ -131,11 +131,16 @@
              <i class="bi bi-wallet2 fs-5"></i> Movimientos
            </a>
          </li>
+         @can('admin-only')
+
+         
          <li class="nav-item">
            <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset( '/Proveedores') }}">
              <i class="bi bi-people fs-5"></i> Proveedores
+             
            </a>
          </li>
+         @endcan
 
          <li class="nav-item">
            <a
@@ -162,6 +167,8 @@
              </ul>
            </div>
          </li>
+         @can('admin-only')
+
 
          <li class="nav-item">
            <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset('/configuracion') }}">
@@ -169,6 +176,7 @@
              Configuración
            </a>
          </li>
+         @endcan
        </ul>
 
        <ul class="nav flex-column mb-3 mt-auto mb-1">
