@@ -149,6 +149,7 @@ class Crud_Movimientos extends Controller
         ]);
 
         $data = $request->all();
+        // generar un codigo de identificacion
         $referencia = $this->generateUniqueReference('Salida');
         // 1. Actualizar el Inventario (restando)
         $result = $this->decrementInventario($data);
@@ -167,7 +168,7 @@ class Crud_Movimientos extends Controller
             'destino'           => $data['ubicacion_entrega'],
             'id_usuario'        => auth()->id()
         ]);
-
+        //Redireccion a la tabla Principal
         return redirect("/Movimientos/tabla")->withSuccess("Salida de material registrada.");
     }
     //salida con el material seleccionado automaticamente

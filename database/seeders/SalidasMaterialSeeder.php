@@ -1,13 +1,12 @@
 <?php
 
-<?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Movimientos;
 use App\Models\Materiales;
 use App\Models\Almacen; // O el nombre de tu modelo de almacén
+use App\Models\Almacenes;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -18,7 +17,7 @@ class SalidasMaterialSeeder extends Seeder
     {
         // Obtenemos IDs existentes para asegurar integridad referencial
         $materialesIds = Materiales::pluck('id')->toArray();
-        $almacenesIds = Almacen::pluck('id')->toArray(); // Asegúrate que el modelo exista
+        $almacenesIds = Almacenes::pluck('id')->toArray(); // Asegúrate que el modelo exista
         $usuariosIds = User::pluck('id')->toArray();
 
         // Destinos de ejemplo para el campo "ubicacion_entrega"

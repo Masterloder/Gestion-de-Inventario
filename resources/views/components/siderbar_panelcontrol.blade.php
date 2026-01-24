@@ -133,11 +133,11 @@
          </li>
          @can('admin-only')
 
-         
+
          <li class="nav-item">
            <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" href="{{ asset( '/Proveedores') }}">
              <i class="bi bi-people fs-5"></i> Proveedores
-             
+
            </a>
          </li>
          @endcan
@@ -181,12 +181,75 @@
 
        <ul class="nav flex-column mb-3 mt-auto mb-1">
          <li class="nav-item">
-           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3" #">
+           <a class="nav-link d-flex align-items-center gap-3 text-dark rounded-3 p-3"
+             href="#"
+             data-bs-toggle="modal"
+             data-bs-target="#helpModal">
              <i class="bi bi-question-circle fs-5"></i>
              Obtener Ayuda
            </a>
          </li>
        </ul>
+       <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title d-flex align-items-center gap-2" id="helpModalLabel">
+          <i class="bi bi-info-circle-fill"></i> Información del Sistema
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        
+        <div class="text-center mb-4">
+          <h4 class="fw-bold text-primary">Gestión de Inventario</h4>
+          <span class="badge rounded-pill bg-light text-dark border">Versión 1.0.0 (2026)</span>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h6 class="fw-bold border-bottom pb-2"><i class="bi bi-cpu me-2"></i>Stack Tecnológico</h6>
+            <ul class="list-unstyled small">
+              <li class="mb-2"><strong>Framework:</strong> Laravel 12</li>
+              <li class="mb-2"><strong>Interfaz:</strong> Bootstrap 5</li>
+              <li class="mb-2"><strong>Servidor/BD:</strong> XAMPP (Apache & MariaDB)</li>
+              <li><strong>Entorno:</strong> Web Responsive</li>
+            </ul>
+          </div>
+
+          <div class="col-md-6">
+            <h6 class="fw-bold border-bottom pb-2"><i class="bi bi-code-slash me-2"></i>Desarrollo</h6>
+            <div class="p-3 bg-light rounded-3">
+              <p class="mb-1 small text-muted">Programador Principal:</p>
+              <p class="fw-bold mb-0 text-dark">BR. YEFFERSON CARABALLO</p>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="card border-info bg-light">
+          <div class="card-body d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+              <i class="bi bi-file-earmark-pdf-fill text-danger fs-2"></i>
+              <div>
+                <h6 class="mb-0 fw-bold">Manual de Usuario</h6>
+                <small class="text-muted">Guía completa de uso en formato PDF</small>
+              </div>
+            </div>
+            <a href="{{ asset('docs/manual_usuario.pdf') }}" class="btn btn-outline-danger shadow-sm" download>
+              <i class="bi bi-download me-1"></i> Descargar
+            </a>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
 
      </div>
    </div>

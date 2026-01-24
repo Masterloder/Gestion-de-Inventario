@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Form-Inventario extends Component
+class Form_Inventario extends Component
 {
     /**
      * Create a new component instance.

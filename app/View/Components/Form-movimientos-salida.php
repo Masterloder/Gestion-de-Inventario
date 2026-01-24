@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Form-movimientos-salida extends Component
+class Form_movimientos_salida extends Component
 {
     /**
      * Create a new component instance.

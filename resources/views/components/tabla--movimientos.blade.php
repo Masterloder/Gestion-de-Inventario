@@ -113,23 +113,23 @@
                                  </button>
                                  @can('admin-only')
 
-                                 
+
                                  <button type="button"
-                                 class="btn btn-sm btn-warning"
-                                 title="Editar Movimiento"
-                                 data-bs-toggle="modal"
-                                 data-bs-target="#editarModal{{ $movimiento->id }}">
-                                 <i class="bi bi-pencil"></i>
-                                </button>
-                                
-                                <button type="button"
-                                class="btn btn-sm btn-danger"
-                                title="Eliminar Movimiento"
-                                data-bs-toggle="modal"
-                                data-bs-target="#eliminar{{ $movimiento->id }}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                            @endcan
+                                     class="btn btn-sm btn-warning"
+                                     title="Editar Movimiento"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#editarModal{{ $movimiento->id }}">
+                                     <i class="bi bi-pencil"></i>
+                                 </button>
+
+                                 <button type="button"
+                                     class="btn btn-sm btn-danger"
+                                     title="Eliminar Movimiento"
+                                     data-bs-toggle="modal"
+                                     data-bs-target="#eliminar{{ $movimiento->id }}">
+                                     <i class="bi bi-trash"></i>
+                                 </button>
+                                 @endcan
 
                              </td>
                          </tr>
@@ -171,7 +171,7 @@
                                          <h5 class="modal-title" id="editarModalLabel{{ $movimiento->id }}">Editar Movimiento #{{ $movimiento->id }}</h5>
                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                      </div>
-                                     <form action="{{ route('movimientos.update', $movimiento->id) }}" method="POST" onsubmit="return confirmarEdicion({{ $movimiento->id }}, {{ $movimiento->cantidad }}, {{ $movimiento->materiales->stock ?? 0 }})">
+                                     <form action="{{ route('movimientos.update', $movimiento->id) }}" method="POST" onsubmit="return confirmarEdicion({{$movimiento->id}},{{$movimiento->cantidad }},{{ $movimiento->materiales->stock ?? 0 }})">
                                          @csrf
                                          @method('PUT')
                                          <div class="modal-body row">
@@ -301,7 +301,7 @@
                          @endif
                      </tbody>
                  </table>
-             </DIV>
+             </div>
          </main>
      </div>
  </div>

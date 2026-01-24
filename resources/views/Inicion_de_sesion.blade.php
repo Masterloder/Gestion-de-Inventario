@@ -6,32 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio de sesión</title>
     <link rel="stylesheet" href="{{ asset(path: 'css/formulario.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        /* Contenedor principal para dividir la pantalla */
+        /* 1. Estructura General del Login */
         .main-wrapper {
             display: flex;
             min-height: 100vh;
             width: 100%;
-            /* Mantenemos tu fondo original aquí */
         }
 
-        /* Lado del Collage (Azul) */
         .collage-section {
             flex: 1;
-            /* Ocupa el 50% */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 40px;
         }
+
         .brand-logo {
             width: 220px;
             margin-bottom: 30px;
             filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.2));
         }
 
-        /* Cuadrícula de fotos para el collage */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -39,33 +38,26 @@
             width: 80%;
             max-width: 500px;
         }
-        
 
-        .photo {
-            background-color: rgba(255, 255, 255, 0.2);
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 10px;
-            aspect-ratio: 1 / 1;
-            background-size: cover;
-            background-position: center;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: block;
         }
 
-        /* Lado del Formulario (Rojo) */
         .form-section {
             flex: 1;
-            /* Ocupa el otro 50% */
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
-        /* Mantenemos tu estilo de tarjeta "Glassmorphism" */
         .login-card {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             padding: 40px;
             width: 100%;
@@ -73,126 +65,133 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
-        
+        /* 2. BLINDAJE PARA EL MODAL DE AYUDA (helpModal) */
+        /* Esto asegura que sea ancho y con texto oscuro */
+        #helpModal .modal-dialog {
+            max-width: 750px !important;
+        }
 
-        /* Clase que aplicaremos al input cuando falle */
+        #helpModal .modal-content {
+            background: white !important;
+            border-radius: 20px !important;
+            max-width: none !important;
+            /* Quita el límite de 400px del error */
+            padding: 0 !important;
+            text-align: left !important;
+        }
+
+        #helpModal .modal-header {
+            background: #1e293b;
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        #helpModal .info-card {
+            background: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 12px;
+            padding: 20px;
+            height: 100%;
+        }
+
+        #helpModal h4,
+        #helpModal h6,
+        #helpModal p,
+        #helpModal strong,
+        #helpModal span {
+            color: #1e293b !important;
+        }
+
+        #helpModal .manual-container {
+            background: #ffffff;
+            border: 1px solid #06b6d4;
+            border-radius: 12px;
+            padding: 15px 20px;
+        }
+
+        #helpModal .btn-download {
+            border: 1px solid #ef4444;
+            color: #ef4444 !important;
+            padding: 6px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        /* 3. Validaciones de Inputs */
         .input-error {
             border-color: #ff4d4d !important;
             background-color: rgba(255, 77, 77, 0.1) !important;
         }
 
-        /* Estilo del mensaje de texto */
         .error-message {
-            color: #000000;
-            font-size: 12px;
-            margin-top: 5px;
-            opacity: 90%;
-            display: block;
-            min-height: 15px;
-            /* Evita que el diseño de la tarjeta salte */
-            font-weight: 600;
-        }
-
-        /* Cuando el input tiene foco O cuando tiene la clase has-content */
-        .input-wrapper input:focus+label,
-        .input-wrapper input.has-content+label {
-            top: -10px;
-            /* Ajusta este valor según tu diseño */
-            font-size: 12px;
             color: #ffffff;
-            /* O el color que prefieras para el texto arriba */
-            transform: translateY(-50%);
-            /* Si usas transform para centrar */
-        }
-
-        /* El overlay ahora cubre absolutamente todo */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.7);
-            /* Fondo un poco más oscuro */
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            /* Valor máximo para estar sobre todo */
-        }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
-            overflow: hidden;
-            /* Para la barra de progreso */
-        }
-
-        /* Barra de progreso de 10 segundos */
-        .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 5px;
-            background: #ff4d4d;
-            width: 100%;
-            animation: timer 10s linear forwards;
-        }
-
-        .photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Esto hace que la foto llene el cuadro sin deformarse */
-            display: block;
-        }
-
-        @keyframes timer {
-            from {
-                width: 100%;
-            }
-
-            to {
-                width: 0%;
-            }
-        }
-
-        /* Animación de entrada */
-        @keyframes slideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* Ajuste para móviles */
-        @media (max-width: 900px) {
-            .main-wrapper {
-                flex-direction: column;
-            }
-
-            .collage-section {
-                display: none;
-                /* Ocultamos el collage en móviles para dar prioridad al login */
-            }
+            font-size: 11px;
+            margin-top: 5px;
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="bi bi-info-circle-fill"></i> Información del Sistema
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-1" style="color: #2563eb;">Gestión de Inventario</h3>
+                    <span class="badge bg-light text-dark border">Versión 1.0.0 (2026)</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <h6 class="fw-bold mb-2"><i class="bi bi-cpu"></i> Stack Tecnológico</h6>
+                            <p class="small mb-1"><strong>Framework:</strong> Laravel 12</p>
+                            <p class="small mb-1"><strong>Interfaz:</strong> Bootstrap 5</p>
+                            <p class="small mb-0"><strong>Servidor:</strong> XAMPP</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <h6 class="fw-bold mb-2"><i class="bi bi-code-slash"></i> Desarrollo</h6>
+                            <p class="small text-muted mb-0">Programador Principal:</p>
+                            <p class="fw-bold mb-0">BR. YEFFERSON CARABALLO</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="manual-container mt-4 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-file-earmark-pdf-fill text-danger fs-2"></i>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Manual de Usuario</h6>
+                            <p class="small text-muted mb-0">Guía completa en PDF</p>
+                        </div>
+                    </div>
+                    <a href="{{ asset('docs/manual_usuario.pdf') }}" class="btn-download" download>
+                        <i class="bi bi-download"></i> Descargar
+                    </a>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-primary rounded-pill px-5" data-bs-dismiss="modal" style="background: #2563eb; border: none;">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <div class="main-wrapper">
         <div class="collage-section">
+
             <div class="logo-container">
                 <img src="{{ asset(path: 'images/Logos/logo_corvisucre.png') }}" alt="Logo Empresa" class="brand-logo">
             </div>
@@ -244,12 +243,17 @@
 
                 <div class="signup-link">
                     <p>No tienes una cuenta? <a href="/registro">Regístrate</a></p>
+                    <p><a href="#" data-bs-toggle="modal" data-bs-target="#helpModal" class="text-white-50 small text-decoration-none">
+                            <i class="bi bi-question-circle"></i> Ayuda del sistema
+                        </a></p>
                 </div>
 
                 </form>
+
             </div>
         </div>
     </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

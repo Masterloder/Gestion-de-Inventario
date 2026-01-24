@@ -99,19 +99,19 @@
                <td>{{ $item->almacen->direccion ?? 'N/A' }}</td>
                <td>
                  {{-- ... Otros botones (Nuevo Material, Almacén, Proveedor) ... --}}
-                 
+
                  {{-- Botón para abrir el nuevo modal de salida --}}
                  <button type="button"
-                 class="btn btn-sm btn-info"
-                 data-bs-toggle="modal"
-                 data-bs-target="#modalRegistrarSalida"
-                 data-material-id="{{ $item->id_material }}"
-                 data-almacen-id="{{ $item->id_almacen }}"
-                 data-inventario-key="{{ $item->id_material }}-{{ $item->id_almacen }}"
-                 title="Registrar Salida">
-                 <i class="bi bi-truck"></i>
-                </button>
-                @can('admin-only')
+                   class="btn btn-sm btn-info"
+                   data-bs-toggle="modal"
+                   data-bs-target="#modalRegistrarSalida"
+                   data-material-id="{{ $item->id_material }}"
+                   data-almacen-id="{{ $item->id_almacen }}"
+                   data-inventario-key="{{ $item->id_material }}-{{ $item->id_almacen }}"
+                   title="Registrar Salida">
+                   <i class="bi bi-truck"></i>
+                 </button>
+                 @can('admin-only')
                  <!-- Botón para abrir el modal de edición de salida -->
                  <button type="button"
                    class="btn btn-sm btn-warning"
@@ -187,7 +187,7 @@
                    data-bs-target="#eliminarModal{{ $item->id }}">
                    <i class="bi bi-trash"></i>
                  </button>
-@endcan
+                 @endcan
                  <div class="modal fade" id="eliminarModal{{ $item->id }}" tabindex="-1" aria-labelledby="eliminarModalLabel{{ $item->id}}" aria-hidden="true">
                    <div class="modal-dialog modal-dialog-centered">
                      <div class="modal-content">
